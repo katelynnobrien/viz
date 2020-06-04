@@ -18,7 +18,7 @@ def initialize_country_names_and_codes():
         return
     COUNTRIES_ISO_TO_NAME = {}
     data_file = "countries.data"
-    os.system("curl 'https://raw.githubusercontent.com/ghdsi/common/master/countries.data' > " + data_file)
+    os.system("curl -s 'https://raw.githubusercontent.com/ghdsi/common/master/countries.data' > " + data_file)
     with open(data_file) as f:
         data = f.read().strip()
         f.close()
