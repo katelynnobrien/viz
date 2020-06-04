@@ -1,0 +1,6 @@
+#!/usr/bin/python3
+
+import os
+
+# Remove country-specific auto-generated pages
+os.system("rm -rf c")

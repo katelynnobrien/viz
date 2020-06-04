@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Novel Coronavirus (COVID-19)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <link rel="stylesheet" type="text/css" href="css/fonts.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css?c" />
+</head>
+<body>
+  <div id="modal-wrapper">
+    <div class="modal-backdrop"></div>
+    <div id="modal"></div>
+  </div>
+  <div class="page-wrapper">
+    <div class="sidebar">
+      <div class="pullbar"></div>
+      <div class="sidebar-header">
+        <img src="img/hm-logo-color-white-text.svg" alt="HealthMap" />
+        <h1 class="sidebar-title">COVID-19</h1>
+      </div>
+      <div class="reported-cases" onClick="handleFlyTo(10, 0, 1)">
+        <div id="total-cases"></div>
+        <div class="reported-cases-subtext">
+          <div class="reported-cases-label">Confirmed cases worldwide</div>
+          <div class="last-updated-date">Updated <span id="last-updated-date"></span></div>
+        </div>
+      </div>
+      <div class="location-filter-wrapper">
+        <input type="text" id="location-filter" name="location-filter" onkeyup="filterList()" placeholder="Filter country list" />
+        <div id="clear-filter" onClick="clearFilter()"><img src="img/close-icon.svg" width="12" height="12" alt="Clear" /></div>
+      </div>
+      <ul id="location-list" class="list-reset"></ul>
+    </div>
+    <div class="map-wrapper">
+      <div class="credit">
+        <span class="credit-text">In collaboration with the Open COVID-19 Data Curation Group</span>
+        <span class="credit-links">
+          <a href="https://github.com/beoutbreakprepared/nCoV2019/tree/master/latest_data" target="new">COVID-19 Dataset</a>
+          <a href="#" onClick="fetchAboutPage()">About</a>
+        </span>
+      </div>
+      <div class="mobile-header">
+        <img src="img/hm-logo-color-white-text.svg" alt="HealthMap" />
+        <h1 class="mobile-title">COVID-19</h1>
+      </div>
+      <div id="legend">
+        <div class="legend-header">Cases</div>
+        <ul class="list-reset"></ul>
+      </div>
+      <div id="range-slider" style="display: none;">
+        <div id="spread">
+          <img id="playpause" width="20" height="20" alt="Play" />
+        </div>
+        <input id="slider" type="range" value="1000" min="0" max="1000" step="1" />
+        <label><span id="date"></span></label>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+  <!-- js -->
+  <script src="js/country.js"></script>
+  <script src="js/dataprovider.js"></script>
+  <script src="js/timeanimation.js"></script>
+  <script src="js/healthmap.js"></script>
+  <!-- /js -->
+  <script async defer
+          src="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js"
+          onload="init()"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css"
+        rel="stylesheet" />
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+
+</body>
+</html>
