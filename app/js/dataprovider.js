@@ -24,7 +24,7 @@ let DataProvider = function(baseUrl) {
 
   /** @private */
   this.dataSliceFileNames_ = [];
-}
+};
 
 DataProvider.prototype.getLatestDataPerCountry = function() {
   return this.latestDataPerCountry_;
@@ -45,10 +45,11 @@ DataProvider.prototype.fetchDailySlices = function(callback) {
   let dailyFetches = [];
   for (let i = 0; i < this.dataSliceFileNames_.length; i++) {
     dailyFetches.push(this.fetchDailySlice(
-        this.dataSliceFileNames_[i], i == 0));
+        this.dataSliceFileNames_[i], false /* isNewest */));
   }
   Promise.all(dailyFetches).then(callback);
 };
+
 
 /** Loads the location data (geo names from latitude and longitude). */
 DataProvider.prototype.fetchLocationData = function() {
@@ -107,7 +108,8 @@ DataProvider.prototype.fetchLatestCounts = function() {
   return fetch(this.baseUrl_ + 'latestCounts.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      document.getElementById('total-cases').innerText = jsonData[0]['caseCount'];
+      const totalCases = parseInt(jsonData[0]['caseCount']);
+      document.getElementById('total-cases').innerText = totalCases.toLocaleString();
       document.getElementById('last-updated-date').innerText = jsonData[0]['date'];
     });
 };
@@ -121,6 +123,11 @@ DataProvider.prototype.loadCountryData = function(callback) {
       .then(callback);
 };
 
+
+DataProvider.prototype.fetchLatestDailySlice = function(callback) {
+  return this.fetchDailySlice(this.dataSliceFileNames_[0], true /* isNewest */)
+      .then(callback);
+}
 
 /**
  * Fetches the next daily slice of data we need. If no argument is provided,
@@ -156,7 +163,7 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
 
   // "Re-hydrate" the features into objects ingestable by the map.
   for (let i = 0; i < features.length; i++) {
-    let feature = formatFeatureForMap(features[i]);
+    let feature = Map.formatFeature(features[i]);
 
     // If we don't know where this is, discard.
     if (!locationInfo[feature['properties']['geoid']]) {
@@ -181,13 +188,6 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
   countryFeaturesByDay[currentDate] = countryFeatures;
   provinceFeaturesByDay[currentDate] = provinceFeatures;
   atomicFeaturesByDay[currentDate] = features;
-
-  // Only use the latest data for the map until we're done downloading
-  // everything.
-  if (isNewest) {
-    showDataAtDate(currentDate);
-  }
-
   updateTimeControl();
 };
 
