@@ -16,8 +16,8 @@ import js_compilation
 
 BACKUP_DIR_PREFIX = "backup_"
 
-# Files and directories inside "app" that do not need to be copied over
-# to the target. Please keep alphabetized.
+# Files and directories that do not need to be copied over to the target.
+# Please keep alphabetized.
 EXCLUDED_GLOBS = [
     "__pycache__",
     "*~",
@@ -59,11 +59,11 @@ def check_dependencies():
 
 def insert_analytics_code(quiet=False):
     main_page = ""
-    with open("app/analytics.js") as f:
+    with open("analytics.js") as f:
         code = f.read()
         f.close()
     inserted = False
-    with open("app/index.html") as f:
+    with open("index.html") as f:
         for line in f:
             if not inserted and "<script" in line:
                 main_page += code
@@ -72,8 +72,8 @@ def insert_analytics_code(quiet=False):
         f.close()
 
     # Remove the file and write a modified version
-    os.system("rm app/index.html")
-    with open("app/index.html", "w") as f:
+    os.system("rm index.html")
+    with open("index.html", "w") as f:
         f.write(main_page)
         f.close()
 
@@ -104,23 +104,23 @@ def link_to_compiled_js_in_html(html_file):
 
 def use_compiled_js(quiet=False):
     js_compilation.compile_js(quiet)
-    link_to_compiled_js_in_html("app/index.html")
-    link_to_compiled_js_in_html("app/country.html")
+    link_to_compiled_js_in_html("index.html")
+    link_to_compiled_js_in_html("country.html")
 
 
 # Returns whether the operation was a success.
 def backup_pristine_files():
     success = True
-    success &= os.system("cp app/index.html app/index.html.orig") == 0
-    success &= os.system("cp app/country.html app/country.html.orig") == 0
+    success &= os.system("cp index.html index.html.orig") == 0
+    success &= os.system("cp country.html country.html.orig") == 0
     return success
 
 
 # Returns whether the operation was a success.
 def restore_pristine_files():
     success = True
-    success &= os.system("mv app/index.html.orig app/index.html") == 0
-    success &= os.system("mv app/country.html.orig app/country.html") == 0
+    success &= os.system("mv index.html.orig index.html") == 0
+    success &= os.system("mv country.html.orig country.html") == 0
     return success
 
 
@@ -143,7 +143,6 @@ def copy_contents(target_path, quiet=False):
     # TODO: Use 'rsync' if it's available.
     success &= (os.system("rm -rf " + target_path + "/*") == 0)
     original_dir = os.getcwd()
-    os.chdir("app")
     all_files = set(glob.glob("**"))
     excluded = set()
     for f in all_files:
@@ -171,7 +170,7 @@ def deploy(target_path, quiet=False):
 
     success = True
     success &= backup_pristine_files()
-    success &= (os.system("sass app/css/styles.scss app/css/styles.css") == 0)
+    success &= (os.system("sass css/styles.scss css/styles.css") == 0)
 
     use_compiled_js(quiet=quiet)
     insert_analytics_code(quiet=quiet)
