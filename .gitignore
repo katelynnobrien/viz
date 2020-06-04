@@ -13,6 +13,12 @@ pids
 *.seed
 *.pid.lock
 
+.sass-cache
+c/
+css/styles.css
+css/styles.css.map
+js/bundle.js
+
 # Python cached compilation artifacts
 *.pyc
 
