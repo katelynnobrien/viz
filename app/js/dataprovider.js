@@ -108,7 +108,7 @@ DataProvider.prototype.fetchLatestCounts = function() {
   return fetch(this.baseUrl_ + 'latestCounts.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      const totalCases = parseInt(jsonData[0]['caseCount']);
+      const totalCases = parseInt(jsonData[0]['caseCount'], 10);
       document.getElementById('total-cases').innerText = totalCases.toLocaleString();
       document.getElementById('last-updated-date').innerText = jsonData[0]['date'];
     });
@@ -163,7 +163,7 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
 
   // "Re-hydrate" the features into objects ingestable by the map.
   for (let i = 0; i < features.length; i++) {
-    let feature = Map.formatFeature(features[i]);
+    let feature = DiseaseMap.formatFeature(features[i]);
 
     // If we don't know where this is, discard.
     if (!locationInfo[feature['properties']['geoid']]) {
