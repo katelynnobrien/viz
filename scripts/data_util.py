@@ -68,11 +68,11 @@ def build_case_count_table_from_line_list(in_data):
 
 def make_country_pages():
     countries = get_all_countries()
-    with open("app/country.html") as f:
+    with open("country.html") as f:
         template = f.read().strip()
         f.close()
     for code in countries:
-        directory = os.path.join("app", "c", code)
+        directory = os.path.join("c", code)
         if not os.path.exists(directory):
             os.makedirs(directory)
         index_file = os.path.join(directory, "index.html")

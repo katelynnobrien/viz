@@ -22,7 +22,6 @@ def run():
     data_util.make_country_pages()
 
     try:
-        os.chdir("app")
         http = threading.Thread(target=run_http_server)
         sass = threading.Thread(target=run_sass_precompiler)
         http.start()
