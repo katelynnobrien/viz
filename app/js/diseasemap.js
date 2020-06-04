@@ -1,24 +1,24 @@
 /** @constructor */
-let Map = function() {
+let DiseaseMap = function() {
 
   /** @private */
   this.mapboxMap_;
 };
 
-Map.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
+DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
 
 
 /**
  * Takes an array of features, and bundles them in a way that the map API
  * can ingest.
  */
-Map.formatFeatureSet = function(features) {
+DiseaseMap.formatFeatureSet = function(features) {
   return {'type': 'FeatureCollection', 'features': features};
 };
 
 
 /** Tweaks the given object to make it ingestable as a feature by the map API. */
-Map.formatFeature = function(feature) {
+DiseaseMap.formatFeature = function(feature) {
   feature.type = 'Feature';
   if (!feature['properties']) {
     // This feature is missing key data, add a placeholder.
@@ -35,7 +35,7 @@ Map.formatFeature = function(feature) {
 };
 
 
-Map.prototype.showDataAtLatestDate = function() {
+DiseaseMap.prototype.showDataAtLatestDate = function() {
   if (!dates.length) {
     console.log('No data to show');
     return;
@@ -44,7 +44,7 @@ Map.prototype.showDataAtLatestDate = function() {
   this.showDataAtDate(latestDate);
 }
 
-Map.prototype.showDataAtDate = function(isodate) {
+DiseaseMap.prototype.showDataAtDate = function(isodate) {
   if (currentIsoDate != isodate) {
     currentIsoDate = isodate;
   }
@@ -54,13 +54,13 @@ Map.prototype.showDataAtDate = function(isodate) {
   // the map is finished loading.
   let source = this.mapboxMap_.getSource('counts');
   if (!!source) {
-    source.setData(Map.formatFeatureSet(featuresToShow));
+    source.setData(DiseaseMap.formatFeatureSet(featuresToShow));
   }
 };
 
 
-Map.prototype.init = function(callback) {
-  mapboxgl.accessToken = Map.MAPBOX_TOKEN;
+DiseaseMap.prototype.init = function(callback) {
+  mapboxgl.accessToken = DiseaseMap.MAPBOX_TOKEN;
   this.mapboxMap_ = new mapboxgl.Map({
     'container': 'map',
     'style': 'mapbox://styles/healthmap/ck7o47dgs1tmb1ilh5b1ro1vn',
@@ -81,7 +81,7 @@ Map.prototype.init = function(callback) {
   this.mapboxMap_.on('load', function () {
     self.mapboxMap_.addSource('counts', {
       'type': 'geojson',
-      'data': Map.formatFeatureSet([])
+      'data': DiseaseMap.formatFeatureSet([])
     });
     let circleColorForTotals = ['step', ['get', 'total']];
     // Don't use the last color here (for new cases).
@@ -114,12 +114,12 @@ Map.prototype.init = function(callback) {
 };
 
 
-Map.prototype.addPopup = function(popup) {
+DiseaseMap.prototype.addPopup = function(popup) {
   popup.addTo(this.mapboxMap_);
 };
 
 
-Map.prototype.addLayer = function(map, id, featureProperty, circleColor) {
+DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) {
   this.mapboxMap_.addLayer({
     'id': id,
     'type': 'circle',
@@ -154,7 +154,7 @@ Map.prototype.addLayer = function(map, id, featureProperty, circleColor) {
 };
 
 
-Map.prototype.flyToCountry = function(event) {
+DiseaseMap.prototype.flyToCountry = function(event) {
   let target = event.target;
   while (!target.getAttribute('country')) {
     target = target.parentNode;

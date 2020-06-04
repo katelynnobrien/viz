@@ -235,6 +235,10 @@ function flyToCountry(event) {
   map.flyToCountry(event);
 }
 
+function showDataAtDate(iso_date) {
+  map.showDataAtDate(iso_date);
+}
+
 function init() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
@@ -246,7 +250,7 @@ function init() {
 
   timeControl = document.getElementById('slider');
 
-  map = new Map();
+  map = new DiseaseMap();
   map.init(function() {
   });
 
