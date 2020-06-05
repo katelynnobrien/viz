@@ -25,6 +25,7 @@ let map;
 // The same popup object will be reused.
 let popup;
 let autoDriveMode = false;
+let threeDMode = false;
 
 let currentIsoDate;
 let animationIntervalId = 0;
@@ -263,16 +264,27 @@ function toggleSideBar() {
   document.getElementById('sidebar').classList.toggle('hidden');
 }
 
+function processHash(url) {
+  const hash = url.split('#')[1] || '';
+  if (!!hash) {
+    let hashBrowns = hash.split('/');
+    for (let i = 0; i < hashBrowns.length; i++) {
+      const hashBrown = hashBrowns[i];
+      if (hashBrown.toLowerCase() == 'autodrive') {
+        autoDriveMode = true;
+        document.body.classList.add('autodrive');
+      }
+      if (hashBrown.toLowerCase() == '3d') {
+        threeDMode = true;
+      }
+    }
+  }}
+
 function init() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
 
-  const hash = window.location.href.split('#')[1] || '';
-  if (hash == 'autodrive') {
-    autoDriveMode = true;
-    document.body.classList.add('autodrive');
-  }
-
+  processHash(window.location.href);
   timeControl = document.getElementById('slider');
   document.getElementById('sidebar-tab').onclick = toggleSideBar;
   toggleSideBar();
