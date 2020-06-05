@@ -240,11 +240,16 @@ function showDataAtDate(iso_date) {
   map.showDataAtDate(iso_date);
 }
 
+function onMapAnimationEnded() {
+  if (autoDriveMode) {
+    toggleMapAnimation(onMapAnimationEnded);
+  }
+}
+
 function onAllDataFetched() {
   dates = dates.sort();
   if (autoDriveMode) {
-    // Start the animation, and start it again when it's over.
-    toggleMapAnimation(toggleMapAnimation);
+    toggleMapAnimation(onMapAnimationEnded);
   }
 }
 
