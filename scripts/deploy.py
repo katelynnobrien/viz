@@ -20,7 +20,6 @@ INCLUDE_LIST = [
     "about.html",
     "index.html",
     "c",
-    "fonts/*",
     "js/bundle.js",
     "css/fonts.css",
     "css/styles.css",
