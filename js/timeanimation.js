@@ -13,7 +13,7 @@ function updateTimeControl() {
   setTimeControlLabel(dates.length - 1);
 }
 
-function toggleMapAnimation() {
+function toggleMapAnimation(animationEndedCallback) {
   const shouldStart = !animationIntervalId;
   document.getElementById('playpause').setAttribute('src', 'img/' +
       (shouldStart ? 'pause' : 'play') + '.svg');
@@ -27,6 +27,7 @@ function toggleMapAnimation() {
       if (i === dates.length) {
         // We've reached the end.
         toggleMapAnimation();
+        animationEndedCallback();
       }
     }, ANIMATION_FRAME_DURATION_MS);
   } else {
