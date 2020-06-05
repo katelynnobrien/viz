@@ -2,5 +2,11 @@
 
 import os
 
+for f in [
+    "css/styles.css",
+    "css/styles.css.map",
+]:
+    os.system("rm -f " + f)
+
 # Remove country-specific auto-generated pages
 os.system("rm -rf c")

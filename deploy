@@ -16,9 +16,11 @@ if len(sys.argv) < 2:
 src_path = os.path.dirname(os.path.realpath(__file__))
 os.chdir(src_path)
 target_path = sys.argv[1]
-if not os.path.exists(target_path):
-    print("Target '" + target_path + "' doesn't exist, creating it.")
-    os.mkdir(target_path)
+if os.path.exists(target_path):
+    print("Target '" + target_path + "' already exists. "
+          "Please make a back-up and remove it.")
+    sys.exit(1)
+os.mkdir(target_path)
 
 if __name__ == '__main__':
     deploy(target_path)

@@ -3,12 +3,12 @@ import os
 import re
 
 SRC_FILES = [
-    "app/js/healthmap.js",
+    "js/healthmap.js",
 ]
 
 TEST_FILES = [
     "tests/base_test.js",
-    "app/js/healthmap_test.js",
+    "js/healthmap_test.js",
 ]
 
 TEMP_TEST_CONCATENATION = "js_test_temp.js"
