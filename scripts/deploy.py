@@ -20,8 +20,11 @@ INCLUDE_LIST = [
     "about.html",
     "index.html",
     "c",
+    "fonts/*",
     "js/bundle.js",
+    "css/fonts.css",
     "css/styles.css",
+    "img/*",
 ]
 
 
@@ -130,7 +133,10 @@ def copy_contents(target_path, quiet=False):
             for p in parents:
                 if not os.path.exists(os.path.join(target_path, p)):
                     os.mkdir(os.path.join(target_path, p))
-        to_copy.append([f, os.path.join(target_path, f)])
+        if "*" not in f:
+            to_copy.append([f, os.path.join(target_path, f)])
+        else:
+            to_copy += [[p, os.path.join(target_path, p)] for p in glob.glob(f)]
 
     for pair in to_copy:
         cmd = "cp -a " + pair[0] + " " + pair[1]
