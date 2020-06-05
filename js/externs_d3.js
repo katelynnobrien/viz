@@ -19,13 +19,10 @@ d3.Line.prototype.x = function(f) {};
 d3.Line.prototype.y = function(f) {};
 
 
-/** @constructor */
-d3.Scale = function() {};
-
-/** @return {d3.Scale} */
+/** @return {Function} */
 d3.Scale.prototype.domain = function(e) {};
 
-/** @return {d3.Scale} */
+/** @return {Function} */
 d3.Scale.prototype.range = function(e) {};
 
 
@@ -57,10 +54,10 @@ d3.line();
 
 d3.max = function(c, f) {};
 
-/** @return {d3.Scale} */
+/** @return {Function} */
 d3.scaleLinear = function() {};
 
-/** @return {d3.Scale} */
+/** @return {Function} */
 d3.scaleTime = function() {};
 
 /** @return {d3.Selection} */
