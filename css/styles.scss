@@ -212,7 +212,7 @@ h1 {
   justify-content: space-between;
   align-items: center;
   font-size: 1.7rem;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .reported-cases-label {
@@ -445,6 +445,10 @@ div.mapboxgl-popup-content {
 .autodrive .mapboxgl-ctrl-top-left,
 .autodrive .mapboxgl-ctrl-top-right {
   display: none;
+}
+
+.mapboxgl-ctrl-bottom-left {
+  margin-left: $sidebar-margin-end;
 }
 
 .autodrive #range-slider {
