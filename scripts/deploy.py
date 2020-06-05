@@ -21,7 +21,6 @@ INCLUDE_LIST = [
     "index.html",
     "c",
     "js/bundle.js",
-    "css/fonts.css",
     "css/styles.css",
     "img/*",
 ]

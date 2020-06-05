@@ -26,8 +26,10 @@ function toggleMapAnimation(animationEndedCallback) {
       i++;
       if (i === dates.length) {
         // We've reached the end.
-        toggleMapAnimation();
-        animationEndedCallback();
+        toggleMapAnimation(null);
+        if (!!animationEndedCallback) {
+          animationEndedCallback();
+        }
       }
     }, ANIMATION_FRAME_DURATION_MS);
   } else {
