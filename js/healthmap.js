@@ -242,7 +242,10 @@ function showDataAtDate(iso_date) {
 
 function onMapAnimationEnded() {
   if (autoDriveMode) {
-    toggleMapAnimation(onMapAnimationEnded);
+    // Let the last frame last for a few seconds before restarting.
+    setTimeout(function() {
+      toggleMapAnimation(onMapAnimationEnded);
+    }, 2000);
   }
 }
 
