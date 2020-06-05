@@ -29,7 +29,7 @@ html {
 }
 
 body {
-  font-family: 'OpenSans', sans-serif;
+  font-family: arial;
   line-height: 1.4;
   color: $text-color-light;
   background-color: $body-bgcolor;
@@ -51,7 +51,6 @@ a:focus, a:hover, a:active {
 }
 
 button {
-  font-family: $font-family;
   text-decoration: none;
   cursor: pointer;
   user-select: none;
@@ -72,7 +71,6 @@ button {
 input[type=text] {
   width: 100%;
   padding: .5rem 1rem;
-  font-family: inherit;
   font-size: .9rem;
   color: #ccc;
   background-color: $sidebar-bgcolor;
