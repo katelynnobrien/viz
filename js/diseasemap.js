@@ -21,7 +21,7 @@ DiseaseMap.formatFeatureSet = function(features) {
 DiseaseMap.formatFeature = function(feature) {
   feature.type = 'Feature';
   if (!feature['properties']) {
-    // This feature is missing key data, add a placeholder.
+    // This feature is missing key data, adding a placeholder.
     feature['properties'] = {'geoid': '0|0'};
   }
   // If the 'new' property is absent, assume 0.
@@ -123,36 +123,21 @@ DiseaseMap.prototype.addPopup = function(popup) {
 
 
 DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) {
+  const type = 'circle';
+  const paint = {
+    'circle-radius': [
+      'case', ['<', 0, ['number', ['get', featureProperty]]],
+      ['*', ['log10', ['sqrt', ['get', featureProperty]]], 10],
+      0],
+    'circle-color': circleColor,
+    'circle-opacity': 0.6,
+  }
+
   this.mapboxMap_.addLayer({
     'id': id,
-    'type': 'circle',
+    'type': type,
     'source': 'counts',
-    'paint': {
-      'circle-radius': [
-        'case', [
-          '<',
-          0, [
-            'number', [
-              'get',
-              featureProperty
-            ]
-          ]
-        ], [
-          '*', [
-            'log10', [
-              'sqrt', [
-                'get',
-                featureProperty
-              ]
-            ]
-          ],
-          10
-        ],
-        0
-      ],
-      'circle-color': circleColor,
-      'circle-opacity': 0.6,
-    }
+    'paint': paint
   });
 };
 
