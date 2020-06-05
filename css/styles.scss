@@ -406,13 +406,18 @@ div.mapboxgl-popup-content {
 
 .credit-text { display: none }
 
+/* Mapbox UI chrome */
+
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
+  opacity: 0.5;
+}
+
 /* Overrides for autodrive mode: remove most interactive elements */
 
 .autodrive .sidebar, .autodrive .credit,
 .autodrive .mapboxgl-ctrl-top-left,
-.autodrive .mapboxgl-ctrl-top-right,
-.autodrive .mapboxgl-ctrl-bottom-left,
-.autodrive .mapboxgl-ctrl-bottom-right {
+.autodrive .mapboxgl-ctrl-top-right {
   display: none;
 }
 
