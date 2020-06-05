@@ -258,10 +258,10 @@ function onAllDataFetched() {
 }
 
 function toggleSideBar() {
-  let sidebar = document.getElementById('sidebar');
-  const previouslyHidden = sidebar.classList.contains('hidden');
+  let pageWrapper = document.getElementById('page-wrapper');
+  const previouslyHidden = pageWrapper.classList.contains('sidebar-hidden');
   document.getElementById('sidebar-tab-icon').textContent = previouslyHidden ? '◀' : '▶';
-  document.getElementById('sidebar').classList.toggle('hidden');
+  pageWrapper.classList.toggle('sidebar-hidden');
 }
 
 function processHash(url) {
