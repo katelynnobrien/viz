@@ -24,6 +24,7 @@ let dates = [];
 let map;
 // The same popup object will be reused.
 let popup;
+let autoDriveMode = false;
 
 let currentIsoDate;
 let animationIntervalId = 0;
@@ -239,6 +240,14 @@ function showDataAtDate(iso_date) {
   map.showDataAtDate(iso_date);
 }
 
+function onAllDataFetched() {
+  dates = dates.sort();
+  if (autoDriveMode) {
+    // Start the animation, and start it again when it's over.
+    toggleMapAnimation(toggleMapAnimation);
+  }
+}
+
 function toggleSideBar() {
   let sidebar = document.getElementById('sidebar');
   const previouslyHidden = sidebar.classList.contains('hidden');
@@ -252,6 +261,7 @@ function init() {
 
   const hash = window.location.href.split('#')[1] || '';
   if (hash == 'autodrive') {
+    autoDriveMode = true;
     document.body.classList.add('autodrive');
   }
 
@@ -270,9 +280,7 @@ function init() {
       // This point the 'dates' array only contains the latest date.
       // Show the latest data when we have that before fetching older data.
       map.showDataAtDate(dates[0]);
-      dataProvider.fetchDailySlices(function() {
-        dates = dates.sort();
-      });
+      dataProvider.fetchDailySlices(onAllDataFetched);
     });
   });
   // Get the basic data about locations before we can start getting daily
