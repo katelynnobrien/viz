@@ -109,6 +109,9 @@ DiseaseMap.prototype.init = function(callback) {
       this.getCanvas().style.cursor = '';
       popup.remove();
     });
+    if (threeDMode) {
+      self.mapboxMap_.easeTo({pitch: 55});
+    }
   });
   showLegend();
 };
