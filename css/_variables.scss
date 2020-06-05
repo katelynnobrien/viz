@@ -2,9 +2,6 @@
 
 $font-family: 'Open Sans', helvetica, sans-serif;
 
-$sidebar-width: 20rem;
-$sidebar-width-sm: 14rem;
-
 $sidebar-bgcolor: rgba(48,48,48,.85);
 $sidebar-bgcolor-mobile: rgba(59,59,59,.85);
 
@@ -30,3 +27,13 @@ $breakpoint-landscape-md-min: $breakpoint-landscape-sm-max + 1px;
 $breakpoint-md-min: 500px;
 $breakpoint-md-max: 899px;
 $breakpoint-lg-min: $breakpoint-md-max + 1px;
+
+$page-padding-end: 1rem;
+$sidebar-width: 20rem;
+$sidebar-margin-end: 1rem;
+
+@media screen and (max-width: $breakpoint-md-max) {
+  $page-padding-end: 0.5rem;
+  $sidebar-width: 14rem;
+  $sidebar-margin-end: 0.5rem;
+}
