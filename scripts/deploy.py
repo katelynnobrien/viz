@@ -14,22 +14,14 @@ from colorama import Fore, Style
 import data_util
 import js_compilation
 
-BACKUP_DIR_PREFIX = "backup_"
 
-# Files and directories that do not need to be copied over to the target.
-# Please keep alphabetized.
-EXCLUDED_GLOBS = [
-    "__pycache__",
-    "*~",
-    "*.orig",
-    ".gitignore",
-    ".sass-cache",
-    "analytics.js",
-    "css/*.scss",
-    "css/*.css.map",
-    "js/externs*.js",
-    "js/healthmap.js",
-    "js/*_test.js",
+# Files and directories that should be deployed. Everything else will be ignored.
+INCLUDE_LIST = [
+    "about.html",
+    "index.html",
+    "c",
+    "js/bundle.js",
+    "css/styles.css",
 ]
 
 
@@ -124,43 +116,28 @@ def restore_pristine_files():
     return success
 
 
-# Returns whether the backup operation succeeded.
-def backup_current_version(target_path, quiet=False):
-    timestamp = datetime.datetime.now().strftime("%Y.%m.%d_%H.%M.%S")
-    backup_dir = BACKUP_DIR_PREFIX + timestamp
-
-    if not quiet:
-        print("Backing up current version into '" + backup_dir + "'...")
-    success = os.system("cp -a " + target_path + " " + backup_dir) == 0
-    if not success and not quiet:
-        print("I could not back up the current version.")
-    return success
-
 def copy_contents(target_path, quiet=False):
     success = True
     if not quiet:
-        print("Replacing target contents with new version...")
+        print("Copying new version into '" + target_path + "'...")
     # TODO: Use 'rsync' if it's available.
     success &= (os.system("rm -rf " + target_path + "/*") == 0)
-    original_dir = os.getcwd()
-    all_files = set(glob.glob("**"))
-    excluded = set()
-    for f in all_files:
-        for g in EXCLUDED_GLOBS:
-            if f in glob.glob(g):
-                excluded.add(f)
-    cmd = "cp -a " + " ".join(all_files) + " " + target_path + "/"
-    if not quiet:
-        print(os.getcwd())
-        print(cmd)
-    success &= (os.system(cmd) == 0)
-    os.chdir(target_path)
-    for g in EXCLUDED_GLOBS:
-        for f in glob.glob(g):
-            if os.path.exists(f):
-                os.system("rm -rf " + f)
 
-    os.chdir(original_dir)
+    to_copy = []
+    for f in INCLUDE_LIST:
+        if "/" in f:
+            parents = f.split("/")[:-1]
+            for p in parents:
+                if not os.path.exists(os.path.join(target_path, p)):
+                    os.mkdir(os.path.join(target_path, p))
+        to_copy.append([f, os.path.join(target_path, f)])
+
+    for pair in to_copy:
+        cmd = "cp -a " + pair[0] + " " + pair[1]
+        if not quiet:
+            print(cmd)
+        success &= (os.system(cmd) == 0)
+
     return success
 
 
@@ -177,7 +154,6 @@ def deploy(target_path, quiet=False):
 
     success &= data_util.make_country_pages()
 
-    success &= backup_current_version(target_path, quiet=quiet)
     success &= copy_contents(target_path, quiet=quiet)
     success &= restore_pristine_files()
 
