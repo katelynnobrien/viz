@@ -1,7 +1,7 @@
 @import './variables.scss';
 
 @media screen and (min-width: $breakpoint-md-min) {
-  .sidebar {
+  #sidebar {
     position: fixed;
     top: 0;
     left: 0;
@@ -75,7 +75,7 @@
     display: flex;
     height: 100vh;
   }
-  .sidebar {
+  #sidebar {
     width: $sidebar-width;
     padding: 1.25rem 1.25rem 0 1.25rem;
     li {
