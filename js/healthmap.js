@@ -240,11 +240,19 @@ function showDataAtDate(iso_date) {
   map.showDataAtDate(iso_date);
 }
 
+function onMapAnimationEnded() {
+  if (autoDriveMode) {
+    // Let the last frame last for a few seconds before restarting.
+    setTimeout(function() {
+      toggleMapAnimation(onMapAnimationEnded);
+    }, 2000);
+  }
+}
+
 function onAllDataFetched() {
   dates = dates.sort();
   if (autoDriveMode) {
-    // Start the animation, and start it again when it's over.
-    toggleMapAnimation(toggleMapAnimation);
+    toggleMapAnimation(onMapAnimationEnded);
   }
 }
 
