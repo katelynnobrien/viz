@@ -115,7 +115,7 @@ h1 {
   width: 100vw;
 }
 
-.sidebar {
+#sidebar {
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -130,12 +130,36 @@ h1 {
   box-shadow: 0 -10px 12px -9px rgba(0,0,0,0.10);
   backdrop-filter: blur(.5rem);
   -webkit-backdrop-filter: blur(.5rem);
-  overflow: hidden;
+  transition: left 0.2s;
+  overflow: visible;
   z-index: 3;
+}
+
+#sidebar.hidden {
+  left: -$sidebar-width;
 }
 
 .sidebar-header {
   display: none;
+}
+
+#sidebar-tab {
+  align-items: center;
+  background-color: $sidebar-bgcolor-mobile;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+  color: #aaa;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  height: 5ex;
+  left: 100%;
+  position: absolute;
+  width: 2.5ex;
+}
+
+#sidebar-tab-icon {
+  font-size: 80%;
 }
 
 .mobile-header {
@@ -415,7 +439,7 @@ div.mapboxgl-popup-content {
 
 /* Overrides for autodrive mode: remove most interactive elements */
 
-.autodrive .sidebar, .autodrive .credit,
+.autodrive #sidebar, .autodrive .credit,
 .autodrive .mapboxgl-ctrl-top-left,
 .autodrive .mapboxgl-ctrl-top-right {
   display: none;

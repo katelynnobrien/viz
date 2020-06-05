@@ -239,6 +239,13 @@ function showDataAtDate(iso_date) {
   map.showDataAtDate(iso_date);
 }
 
+function toggleSideBar() {
+  let sidebar = document.getElementById('sidebar');
+  const previouslyHidden = sidebar.classList.contains('hidden');
+  document.getElementById('sidebar-tab-icon').textContent = previouslyHidden ? '◀' : '▶';
+  document.getElementById('sidebar').classList.toggle('hidden');
+}
+
 function init() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
@@ -249,6 +256,8 @@ function init() {
   }
 
   timeControl = document.getElementById('slider');
+  document.getElementById('sidebar-tab').onclick = toggleSideBar;
+  toggleSideBar();
 
   map = new DiseaseMap();
   map.init(function() {
