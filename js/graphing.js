@@ -1,19 +1,16 @@
 let Graphing = function() {
 };
 
-const CASE_GRAPH_WIDTH_PX = 200;
-const CASE_GRAPH_HEIGHT_PX = 120;
-
 Graphing.sameLocation = function(geoid_a, geoid_b) {
   // Comparing the strings directly seems sufficient for now, but we might need
   // to round to fewer decimal places first.
   return geoid_a == geoid_b;
 }
 
-Graphing.makeCasesGraph = function(geoids, property, features, dates) {
+Graphing.makeCasesGraph = function(
+    geoids, property, features, dates, width, height) {
   let svg = d3.select(document.createElementNS(d3.namespaces.svg, 'svg'));
-  svg.attr('width', CASE_GRAPH_WIDTH_PX).
-      attr('height', CASE_GRAPH_HEIGHT_PX);
+  svg.attr('width', width).attr('height', height);
 
   let curves = [];
   let allCases = [];
@@ -21,9 +18,8 @@ Graphing.makeCasesGraph = function(geoids, property, features, dates) {
     let curve = [];
     for (let i = 0; i < dates.length; i++) {
       const date = dates[i];
-      let features = atomicFeaturesByDay[date];
-      for (let i = 0; i < features.length; i++) {
-        let f = features[i];
+      for (let j = 0; j < features[date].length; j++) {
+        let f = features[date][j];
         if (Graphing.sameLocation(geoids[g], f['properties']['geoid'])) {
           f['properties']['date'] = date;
           let c = { 'date': d3.timeParse("%Y-%m-%d")(date) };
@@ -38,15 +34,15 @@ Graphing.makeCasesGraph = function(geoids, property, features, dates) {
 
   let xScale = d3.scaleTime()
       .domain(d3.extent(allCases, function(c) { return c['date']; }))
-      .range([0, CASE_GRAPH_WIDTH_PX]);
+      .range([0, width]);
 
   svg.append('g')
-      .attr('transform', 'translate(0,' + CASE_GRAPH_HEIGHT_PX + ')')
+      .attr('transform', 'translate(0,' + height + ')')
       .call(d3.axisBottom(xScale).tickValues([]));
 
   let yScale = d3.scaleLinear()
       .domain([0, d3.max(allCases, function(c) { return c[property]; })])
-      .range([CASE_GRAPH_HEIGHT_PX, 0]);
+      .range([height, 0]);
 
   svg.append("g")
       .call(d3.axisLeft(yScale).tickValues([]));
@@ -62,7 +58,7 @@ Graphing.makeCasesGraph = function(geoids, property, features, dates) {
   }
 
   for (let i = 0; i < lines.length; i++) {
-  svg.append("path")
+    svg.append("path")
       .attr('fill', 'none')
       .attr('d', lines[i](curves[i]))
       .attr('stroke', 'steelblue')

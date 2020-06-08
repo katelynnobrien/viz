@@ -463,7 +463,12 @@ div.mapboxgl-popup-content {
 /* Country-specific pages */
 
 #dash {
-  height: 100%;
+  height: 95%;
+  width: 95%;
+}
+
+#dash svg {
+  background: white;
 }
 
 /* Modal */

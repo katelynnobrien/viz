@@ -1,5 +1,7 @@
 // Constants
 const ANIMATION_FRAME_DURATION_MS = 300;
+const POPUP_CASE_GRAPH_WIDTH_PX = 200;
+const POPUP_CASE_GRAPH_HEIGHT_PX = 120;
 const COLOR_MAP = [
   ['#67009e', '< 10', 10],
   ['#921694', '11–100', 100],
@@ -163,8 +165,9 @@ function showPopupForEvent(e) {
       '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
       totalCaseCount.toLocaleString() + '</div>';
 
-  content.appendChild(Graphing.makeCasesGraph(
-      [geo_id], 'total', atomicFeaturesByDay, dates));
+  content.appendChild(Graphing.makeCasesGraph([geo_id], 'total',
+      atomicFeaturesByDay, dates,
+      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -261,13 +264,22 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
+  debugger;
+  let geoids = [];
+  let dates = [];
+  let features = {};
   for (let date in data) {
+    dates.push(date);
+    features[date] = [];
     for (let geoid in data[date]) {
-      let thisIsATest = true;
+      geoids.push(geoid);
+      let f = { 'properties': {'geoid': geoid, 'date': date} };
+      f['properties']['total'] = data[date][geoid];
+      features[date].push(f);
     }
   }
   let dash = document.getElementById('dash');
-  // dash.appendChild(Graphing.makeCaseGraph());
+  dash.appendChild(Graphing.makeCasesGraph(geoids, 'total', features, dates, dash.clientWidth, dash.clientHeight));
 }
 
 // Exports
