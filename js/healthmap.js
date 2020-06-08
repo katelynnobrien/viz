@@ -163,8 +163,8 @@ function showPopupForEvent(e) {
       '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
       totalCaseCount.toLocaleString() + '</div>';
 
-  content.appendChild(Graphing.makeCaseGraph(
-      geo_id, 'total', atomicFeaturesByDay, dates));
+  content.appendChild(Graphing.makeCasesGraph(
+      [geo_id], 'total', atomicFeaturesByDay, dates));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
