@@ -23,9 +23,9 @@ Graphing.makeCaseGraph = function(geoid, property, features, dates) {
       let f = features[i];
       if (Graphing.sameLocation(geoid, f['properties']['geoid'])) {
         f['properties']['date'] = date;
-        cases.push({
-          'date': d3.timeParse("%Y-%m-%d")(date),
-          property: f['properties'][property]});
+        let c = { 'date': d3.timeParse("%Y-%m-%d")(date) };
+        c[property] = f['properties'][property];
+        cases.push(c);
       }
     }
   }
@@ -39,7 +39,7 @@ Graphing.makeCaseGraph = function(geoid, property, features, dates) {
       .call(d3.axisBottom(xScale).tickValues([]));
 
   let yScale = d3.scaleLinear()
-      .domain([0, d3.max(cases, function(c) { return c['total']; })])
+      .domain([0, d3.max(cases, function(c) { return c[property]; })])
       .range([CASE_GRAPH_HEIGHT_PX, 0]);
 
   svg.append("g")
