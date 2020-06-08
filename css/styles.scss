@@ -374,7 +374,7 @@ div.mapboxgl-popup-content {
 }
 
 .mapboxgl-popup-content svg {
-  margin-top: 7px;
+  margin: 5px;
   overflow: visible;
 }
 
@@ -472,6 +472,8 @@ div.mapboxgl-popup-content {
 
 #dash svg {
   background: white;
+  overflow: visible;
+  padding: 2ex;
 }
 
 /* Modal */

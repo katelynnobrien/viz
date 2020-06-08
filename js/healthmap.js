@@ -167,7 +167,7 @@ function showPopupForEvent(e) {
 
   content.appendChild(Graphing.makeCasesGraph([geo_id], 'total',
       atomicFeaturesByDay, dates,
-      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
+      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX, true /* mini */));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -264,22 +264,22 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
-  debugger;
-  let geoids = [];
+  let geoids = new Set();
   let dates = [];
   let features = {};
   for (let date in data) {
     dates.push(date);
     features[date] = [];
     for (let geoid in data[date]) {
-      geoids.push(geoid);
+      geoids.add(geoid);
       let f = { 'properties': {'geoid': geoid, 'date': date} };
       f['properties']['total'] = data[date][geoid];
       features[date].push(f);
     }
   }
   let dash = document.getElementById('dash');
-  dash.appendChild(Graphing.makeCasesGraph(geoids, 'total', features, dates, dash.clientWidth, dash.clientHeight));
+  dash.appendChild(Graphing.makeCasesGraph(Array.from(geoids), 'total',
+      features, dates, dash.clientWidth, dash.clientHeight, false /* mini */));
 }
 
 // Exports

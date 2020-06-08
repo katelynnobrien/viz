@@ -14,13 +14,25 @@ Graphing.sameLocation = function(geoid_a, geoid_b) {
   return geoid_a == geoid_b;
 }
 
+
+/**
+ * Returns a DOM svg element with the requested graph. The given geoids are
+ * assumed to have no repetition.
+ */
 Graphing.makeCasesGraph = function(
-    geoids, property, features, dates, width, height) {
+    geoids, property, features, dates, totalWidth, totalHeight, mini) {
   let svg = d3.select(document.createElementNS(d3.namespaces.svg, 'svg'));
-  svg.attr('width', width).attr('height', height);
+  const margin = mini ? {'top': 10,  'right': 0,  'bottom': 0,  'left': 0} :
+                        {'top': 20, 'right': 30, 'bottom': 30, 'left': 40};
+  let width = totalWidth - margin['left'] - margin['right'];
+  let height = totalHeight - margin['top'] - margin['bottom'];
+
+  svg.attr('width', totalWidth).attr('height', totalHeight);
 
   let curves = [];
   let allCases = [];
+
+  // TODO: Very inefficient. Optimize a bit more.
   for (let g = 0; g < geoids.length; g++) {
     let curve = [];
     for (let i = 0; i < dates.length; i++) {
@@ -43,16 +55,23 @@ Graphing.makeCasesGraph = function(
       .domain(d3.extent(allCases, function(c) { return c['date']; }))
       .range([0, width]);
 
+  let axisBottom = d3.axisBottom(xScale);
+  if (mini) {
+    axisBottom = axisBottom.tickValues([]);
+  }
   svg.append('g')
       .attr('transform', 'translate(0,' + height + ')')
-      .call(d3.axisBottom(xScale).tickValues([]));
+      .call(axisBottom);
 
   let yScale = d3.scaleLinear()
       .domain([0, d3.max(allCases, function(c) { return c[property]; })])
       .range([height, 0]);
 
-  svg.append("g")
-      .call(d3.axisLeft(yScale).tickValues([]));
+  let axisLeft = d3.axisLeft(yScale);
+  if (mini) {
+    axisLeft = axisLeft.tickValues([]);
+  }
+  svg.append("g").call(axisLeft);
 
   let lines = [];
   for (let i = 0; i < curves.length; i++) {
