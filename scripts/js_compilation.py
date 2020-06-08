@@ -15,6 +15,7 @@ def compile_js(quiet=False):
         "--js js/country.js "
         "--js js/dataprovider.js "
         "--js js/diseasemap.js "
+        "--js js/graphing.js "
         "--js js/timeanimation.js "
         "--js js/healthmap.js "
         "--externs js/externs_d3.js "
