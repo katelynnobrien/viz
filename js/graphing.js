@@ -10,7 +10,7 @@ Graphing.sameLocation = function(geoid_a, geoid_b) {
   return geoid_a == geoid_b;
 }
 
-Graphing.makeCaseGraph = function(geoid, features, dates) {
+Graphing.makeCaseGraph = function(geoid, property, features, dates) {
   let svg = d3.select(document.createElementNS(d3.namespaces.svg, 'svg'));
   svg.attr('width', CASE_GRAPH_WIDTH_PX).
       attr('height', CASE_GRAPH_HEIGHT_PX);
@@ -26,7 +26,7 @@ Graphing.makeCaseGraph = function(geoid, features, dates) {
         f['properties']['date'] = date;
         cases.push({
           'date': d3.timeParse("%Y-%m-%d")(date),
-          'total': f['properties']['total']});
+          property: f['properties'][property]});
       }
     }
   }
@@ -47,8 +47,10 @@ Graphing.makeCaseGraph = function(geoid, features, dates) {
       .call(d3.axisLeft(yScale).tickValues([]));
 
   let casesLine = d3.line()
-    .x(function(c) { return xScale(c['date']);}) // apply the x scale to the x data
-    .y(function(c) { return yScale(c['total']);}) // apply the y scale to the y data
+    // apply the x scale to the x data
+    .x(function(c) { return xScale(c['date']);})
+    // apply the y scale to the y data
+    .y(function(c) { return yScale(c[property]);})
 
   svg.append("path")
       .attr('d', casesLine(cases))
