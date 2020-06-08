@@ -1,6 +1,13 @@
 let Graphing = function() {
 };
 
+Graphing.CURVE_COLORS = [
+  '#4285F4',
+  '#DB4437',
+  '#F4B400',
+  '#0F9D58',
+];
+
 Graphing.sameLocation = function(geoid_a, geoid_b) {
   // Comparing the strings directly seems sufficient for now, but we might need
   // to round to fewer decimal places first.
@@ -61,7 +68,7 @@ Graphing.makeCasesGraph = function(
     svg.append("path")
       .attr('fill', 'none')
       .attr('d', lines[i](curves[i]))
-      .attr('stroke', 'steelblue')
+      .attr('stroke', Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length])
       .attr('stroke-width', 1.5);
   }
 
