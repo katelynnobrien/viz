@@ -261,7 +261,13 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
-  console.log(data);
+  for (let date in data) {
+    for (let geoid in data[date]) {
+      let thisIsATest = true;
+    }
+  }
+  let dash = document.getElementById('dash');
+  // dash.appendChild(Graphing.makeCaseGraph());
 }
 
 // Exports

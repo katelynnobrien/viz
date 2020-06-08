@@ -15,7 +15,6 @@ Graphing.makeCaseGraph = function(geoid, property, features, dates) {
   svg.attr('width', CASE_GRAPH_WIDTH_PX).
       attr('height', CASE_GRAPH_HEIGHT_PX);
 
-  let historicalFeaturesForHere = [];
   let cases = [];
   for (let i = 0; i < dates.length; i++) {
     const date = dates[i];
@@ -59,5 +58,4 @@ Graphing.makeCaseGraph = function(geoid, property, features, dates) {
       .attr('stroke-width', 1.5);
 
   return svg.node();
-
 };
