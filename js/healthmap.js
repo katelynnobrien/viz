@@ -163,7 +163,8 @@ function showPopupForEvent(e) {
       '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
       totalCaseCount.toLocaleString() + '</div>';
 
-  content.appendChild(Graphing.makeCaseGraph(geo_id, atomicFeaturesByDay, dates));
+  content.appendChild(Graphing.makeCasesGraph(
+      [geo_id], 'total', atomicFeaturesByDay, dates));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -260,7 +261,13 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
-  console.log(data);
+  for (let date in data) {
+    for (let geoid in data[date]) {
+      let thisIsATest = true;
+    }
+  }
+  let dash = document.getElementById('dash');
+  // dash.appendChild(Graphing.makeCaseGraph());
 }
 
 // Exports

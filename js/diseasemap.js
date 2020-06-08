@@ -37,7 +37,6 @@ DiseaseMap.formatFeature = function(feature) {
 
 DiseaseMap.prototype.showDataAtLatestDate = function() {
   if (!dates.length) {
-    console.log('No data to show');
     return;
   }
   const latestDate = dates[dates.length - 1];
