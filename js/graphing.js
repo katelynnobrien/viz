@@ -16,11 +16,11 @@ Graphing.sameLocation = function(geoid_a, geoid_b) {
 
 
 /**
- * Returns a DOM svg element with the requested graph. The given geoids are
- * assumed to have no repetition.
+ * Takes a data object as returned by
+ * |DataProvider.convertGeoJsonFeaturesToGraphData|.
+ * Returns a DOM svg element with the requested graph.
  */
-Graphing.makeCasesGraph = function(
-    geoids, property, features, dates, totalWidth, totalHeight, mini) {
+Graphing.makeCasesGraph = function(data, totalWidth, totalHeight, mini) {
   let svg = d3.select(document.createElementNS(d3.namespaces.svg, 'svg'));
   const margin = mini ? {'top': 10,  'right': 0,  'bottom': 0,  'left': 0} :
                         {'top': 20, 'right': 30, 'bottom': 30, 'left': 40};
@@ -32,21 +32,22 @@ Graphing.makeCasesGraph = function(
   let curves = [];
   let allCases = [];
 
-  // TODO: Very inefficient. Optimize a bit more.
-  for (let g = 0; g < geoids.length; g++) {
+  if (!data['dates']) {
+    console.log('The data object needs a "dates" property. Aborting');
+    return null;
+  }
+
+  for (let g in data) {
+    if (g == 'dates') {
+      continue;
+    }
     let curve = [];
-    for (let i = 0; i < dates.length; i++) {
+    for (let i = 0; i < data['dates'].length; i++) {
       const date = dates[i];
-      for (let j = 0; j < features[date].length; j++) {
-        let f = features[date][j];
-        if (Graphing.sameLocation(geoids[g], f['properties']['geoid'])) {
-          f['properties']['date'] = date;
-          let c = { 'date': d3.timeParse("%Y-%m-%d")(date) };
-          c[property] = f['properties'][property];
-          curve.push(c);
-          allCases.push(c);
-        }
-      }
+      let c = { 'date': d3.timeParse("%Y-%m-%d")(date) };
+      c['value'] = data[g][i];
+      curve.push(c);
+      allCases.push(c);
     }
     curves.push(curve);
   }
@@ -64,7 +65,7 @@ Graphing.makeCasesGraph = function(
       .call(axisBottom);
 
   let yScale = d3.scaleLinear()
-      .domain([0, d3.max(allCases, function(c) { return c[property]; })])
+      .domain([0, d3.max(allCases, function(c) { return c['value']; })])
       .range([height, 0]);
 
   let axisLeft = d3.axisLeft(yScale);
@@ -79,7 +80,7 @@ Graphing.makeCasesGraph = function(
       // apply the x scale to the x data
       x(function(c) { return xScale(c['date']);}).
       // apply the y scale to the y data
-      y(function(c) { return yScale(c[property]);});
+      y(function(c) { return yScale(c['value']);});
     lines.push(line);
   }
 

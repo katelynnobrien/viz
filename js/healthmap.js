@@ -165,8 +165,20 @@ function showPopupForEvent(e) {
       '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
       totalCaseCount.toLocaleString() + '</div>';
 
-  content.appendChild(Graphing.makeCasesGraph([geo_id], 'total',
-      atomicFeaturesByDay, dates,
+  let relevantFeaturesByDay = {};
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
+    relevantFeaturesByDay[date] = [];
+    for (let j = 0; j < atomicFeaturesByDay[date].length; j++) {
+      const feature = atomicFeaturesByDay[date][j];
+      if (feature['properties']['geoid'] == geo_id) {
+        relevantFeaturesByDay[date].push(feature);
+      }
+    }
+  }
+
+  content.appendChild(Graphing.makeCasesGraph(
+      DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
       POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX, true /* mini */));
 
   // Ensure that if the map is zoomed out such that multiple
@@ -264,22 +276,40 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
+  // De-duplicate geoids and dates, in case the data isn't well organized.
   let geoids = new Set();
-  let dates = [];
-  let features = {};
+  let dates = new Set();
   for (let date in data) {
-    dates.push(date);
-    features[date] = [];
+    dates.add(date);
+  }
+  dates = Array.from(dates).sort();
+
+  let o = {'dates': dates};
+
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
     for (let geoid in data[date]) {
       geoids.add(geoid);
-      let f = { 'properties': {'geoid': geoid, 'date': date} };
-      f['properties']['total'] = data[date][geoid];
-      features[date].push(f);
     }
   }
+
+  const geoidsArray = Array.from(geoids);
+  for (let i = 0; i < geoidsArray.length; i++) {
+    const g = geoidsArray[i];
+    o[g] = [];
+    for (let j = 0; j < dates.length; j++) {
+      const date = dates[j];
+      if (!isNaN(data[date][g])) {
+        o[g].push(data[date][g]);
+      } else {
+        o[g].push(null);
+      }
+    }
+  }
+
   let dash = document.getElementById('dash');
-  dash.appendChild(Graphing.makeCasesGraph(Array.from(geoids), 'total',
-      features, dates, dash.clientWidth, dash.clientHeight, false /* mini */));
+  dash.appendChild(Graphing.makeCasesGraph(
+      o, dash.clientWidth, dash.clientHeight, false /* mini */));
 }
 
 // Exports

@@ -26,6 +26,44 @@ let DataProvider = function(baseUrl) {
   this.dataSliceFileNames_ = [];
 };
 
+/**
+ * This takes an Object whose keys are date string, and values are arrays of
+ * GeoJSON-style features. It returns an Object with the following properties:
+ * - 'dates' maps to an array of length N containing sorted date strings
+ * - for each geoid in the input data set, a key of this geoid maps to an
+ *   array of length N containing corresponding values. A missing value is
+ *   represented by 'null'.
+ */
+DataProvider.convertGeoJsonFeaturesToGraphData = function(datesToFeatures, prop) {
+  let o = {};
+  let dates = new Set();
+  let geoids = new Set();
+  for (let date in datesToFeatures) {
+    dates.add(date);
+  }
+  o['dates'] = Array.from(dates).sort();
+  for (let i = 0; i < o['dates'].length; i++) {
+    const date = o['dates'][i];
+    for (let j = 0; j < datesToFeatures[date].length; j++) {
+      const feature = datesToFeatures[date][j];
+      const geoid = feature['properties']['geoid'];
+      if (!geoid) {
+        continue;
+      }
+      geoids.add(geoid);
+      if (!o[geoid]) {
+        o[geoid] = [];
+      }
+      if (feature['properties'].hasOwnProperty(prop)) {
+        o[geoid].push(feature['properties'][prop]);
+      } else {
+        o[geoid].push(null);
+      }
+    }
+  }
+  return o;
+}
+
 DataProvider.prototype.getLatestDataPerCountry = function() {
   return this.latestDataPerCountry_;
 };
