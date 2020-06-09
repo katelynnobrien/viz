@@ -442,16 +442,15 @@ div.mapboxgl-popup-content {
   left: $sidebar-margin-end;
 }
 
-#chart {
+#page-wrapper #chart {
   height: 300px;
   width: 400px;
 }
 
-#chart canvas {
+#dash #chart {
   height: 100%;
   width: 100%;
 }
-
 
 /* Overrides for autodrive mode: remove most interactive elements */
 
@@ -470,7 +469,7 @@ div.mapboxgl-popup-content {
 #dash {
   height: 94%;
   margin: 0 auto;
-  position: absolute;
+  position: relative;
   top: 3%;
   width: 94%;
 }
