@@ -39,6 +39,9 @@ d3.Selection.prototype.append = function(e) {};
 d3.Selection.prototype.call = function(e) {};
 
 /** @return {d3.Selection} */
+d3.Selection.prototype.datum = function(e) {};
+
+/** @return {d3.Selection} */
 d3.Selection.prototype.node = function() {};
 
 /** @return {d3.Axis} */

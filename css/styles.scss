@@ -365,17 +365,11 @@ h1 {
 }
 
 .mapboxgl-popup {
-  max-width: 400px;
   color: #222;
 }
 
 div.mapboxgl-popup-content {
   padding: 20px;
-}
-
-.mapboxgl-popup-content svg {
-  margin: 5px;
-  overflow: visible;
 }
 
 .popup-header {
@@ -448,6 +442,17 @@ div.mapboxgl-popup-content {
   left: $sidebar-margin-end;
 }
 
+#chart {
+  height: 300px;
+  width: 400px;
+}
+
+#chart canvas {
+  height: 100%;
+  width: 100%;
+}
+
+
 /* Overrides for autodrive mode: remove most interactive elements */
 
 .autodrive #sidebar, .autodrive .credit,
@@ -468,12 +473,6 @@ div.mapboxgl-popup-content {
   position: absolute;
   top: 3%;
   width: 94%;
-}
-
-#dash svg {
-  background: white;
-  overflow: visible;
-  padding: 2ex;
 }
 
 /* Modal */

@@ -1,7 +1,7 @@
 // Constants
 const ANIMATION_FRAME_DURATION_MS = 300;
-const POPUP_CASE_GRAPH_WIDTH_PX = 200;
-const POPUP_CASE_GRAPH_HEIGHT_PX = 120;
+const POPUP_CASE_GRAPH_WIDTH_PX = 400;
+const POPUP_CASE_GRAPH_HEIGHT_PX = 300;
 const COLOR_MAP = [
   ['#67009e', '< 10', 10],
   ['#921694', '11–100', 100],
@@ -161,9 +161,7 @@ function showPopupForEvent(e) {
   totalCaseCount = props['total'];
 
   let content = document.createElement('div');
-  content.innerHTML = '<h3 class="popup-header">' + locationString +
-      '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
-      totalCaseCount.toLocaleString() + '</div>';
+  content.innerHTML = '<h3 class="popup-header">' + locationString + '</h3>';
 
   let relevantFeaturesByDay = {};
   for (let i = 0; i < dates.length; i++) {

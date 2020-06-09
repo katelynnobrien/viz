@@ -68,7 +68,8 @@ DiseaseMap.prototype.init = function(callback) {
   }).addControl(new mapboxgl.NavigationControl());
   popup = new mapboxgl.Popup({
     'closeButton': false,
-    'closeOnClick': false
+    'closeOnClick': true,
+    'maxWidth': 'none',
   });
 
   let self = this;
@@ -106,7 +107,7 @@ DiseaseMap.prototype.init = function(callback) {
 
     self.mapboxMap_.on('mouseleave', 'totals', function () {
       this.getCanvas().style.cursor = '';
-      popup.remove();
+      // popup.remove();
     });
     if (threeDMode) {
       self.mapboxMap_.easeTo({pitch: 55});
