@@ -68,7 +68,7 @@ DiseaseMap.prototype.init = function(callback) {
   }).addControl(new mapboxgl.NavigationControl());
   popup = new mapboxgl.Popup({
     'closeButton': false,
-    'closeOnClick': false,
+    'closeOnClick': true,
     'maxWidth': 'none',
   });
 
