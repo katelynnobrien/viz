@@ -258,6 +258,9 @@ function init() {
   processHash(window.location.href);
   timeControl = document.getElementById('slider');
   document.getElementById('sidebar-tab').onclick = toggleSideBar;
+  document.getElementById('percapita').addEventListener('change', function(e) {
+    console.log(document.getElementById('percapita').checked);
+  });
   toggleSideBar();
 
   map = new DiseaseMap();
