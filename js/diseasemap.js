@@ -102,12 +102,12 @@ DiseaseMap.prototype.init = function(callback) {
     self.mapboxMap_.on('mouseenter', 'totals', function (e) {
       // Change the cursor style as a UI indicator.
       this.getCanvas().style.cursor = 'pointer';
-      showPopupForEvent(e);
     });
+
+    self.mapboxMap_.on('click', 'totals', showPopupForEvent);
 
     self.mapboxMap_.on('mouseleave', 'totals', function () {
       this.getCanvas().style.cursor = '';
-      // popup.remove();
     });
     if (threeDMode) {
       self.mapboxMap_.easeTo({pitch: 55});
