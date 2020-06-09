@@ -149,6 +149,7 @@ DataProvider.prototype.fetchCountryNames = function() {
         const code = parts[0];
         const name = parts[1];
         // Check whether population count is part of this datum.
+        const population = parts.length == 4 ? parseInt(parts[2], 10) : 0;
         let bboxIndex = parts.length == 4 ? 3 : 2;
         let bboxParts = parts[bboxIndex].split('|');
         let bboxes = [];
@@ -156,7 +157,7 @@ DataProvider.prototype.fetchCountryNames = function() {
             let bbox = bboxParts[j].split(',');
             bboxes.push(bbox);
         }
-        let c = new Country(code, name, bboxes);
+        let c = new Country(code, name, population, bboxes);
         countries[code] = c;
         countriesByName[name] = c;
       }
