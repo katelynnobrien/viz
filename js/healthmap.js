@@ -19,6 +19,8 @@ let dataProvider;
 let locationInfo = {};
 // A map from 2-letter ISO country codes to country objects.
 let countries = {};
+// A map from country names to country objects.
+let countriesByName = {};
 let dates = [];
 let map;
 // The same popup object will be reused.
@@ -147,7 +149,6 @@ function showPopupForEvent(e) {
   let lat = parseFloat(coordinatesString[0]);
   let lng = parseFloat(coordinatesString[1]);
 
-  let locationString = '';
   let totalCaseCount = 0;
   // Country, province, city
   let location = locationInfo[geo_id].split(',');
@@ -155,13 +156,24 @@ function showPopupForEvent(e) {
   if (location[2].length == 2) {
     location[2] = countries[location[2]].getName();
   }
+  const countryName = location[2];
+  const country = countriesByName[countryName];
+
   // Remove empty strings
   location = location.filter(function (el) { return el != ''; });
-  locationString = location.join(', ');
+  let locationSpan = [];
+  for (let i = 0; i < location.length; i++) {
+    if (i == location.length - 1 && !!country) {
+      locationSpan.push('<a target="_blank" href="/c/' +
+                        country.getCode() + '/">' + location[i] + '</a>');
+    } else {
+      locationSpan.push(location[i]);
+    }
+  }
   totalCaseCount = props['total'];
 
   let content = document.createElement('div');
-  content.innerHTML = '<h3 class="popup-header">' + locationString + '</h3>';
+  content.innerHTML = '<h3 class="popup-header"><span>' + locationSpan.join(', ') + '</span></h3>';
 
   let relevantFeaturesByDay = {};
   for (let i = 0; i < dates.length; i++) {
@@ -187,6 +199,9 @@ function showPopupForEvent(e) {
   }
   popup.setLngLat([lng, lat]).setDOMContent(content);
   map.addPopup(popup);
+  popup.getElement().onmouseleave = function() {
+    popup.remove();
+  };
 }
 
 function flyToCountry(event) {

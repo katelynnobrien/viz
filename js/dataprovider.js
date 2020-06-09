@@ -156,6 +156,7 @@ DataProvider.prototype.fetchCountryNames = function() {
         }
         let c = new Country(code, name, bboxes);
         countries[code] = c;
+        countriesByName[name] = c;
       }
     });
 };
