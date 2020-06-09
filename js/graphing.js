@@ -13,6 +13,9 @@ Graphing.CHART_CONFIG = {
   'type': 'line',
   'options': {
     'responsive': true,
+    'legend': {
+      'display': false,
+    },
     'tooltips': {
       'mode': 'index',
       'intersect': false,
@@ -80,7 +83,12 @@ Graphing.makeCasesGraph = function(
     curve['data'] = data[geoid];
     curve['borderColor'] =
         Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
-    curve['label'] = 'Total cases';
+    const info = locationInfo[geoid].split(',');
+    let label = info[1];
+    if (!!info[0]) {
+      label = info[0] + ', ' + label;
+    }
+    curve['label'] = label;
     dataToPlot.push(curve);
     i += 1;
   }

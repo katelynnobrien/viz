@@ -176,10 +176,11 @@ DataProvider.prototype.fetchLatestCounts = function() {
 /** Loads the appropriate country-specific data. */
 DataProvider.prototype.loadCountryData = function(callback) {
   const code = document.getElementById('dash').getAttribute('c');
-  fetch(this.baseUrl_ + 'c/' + code + '.json')
-      .then(function(response) { return response.json(); })
-      .then(callback);
-};
+  let self = this;
+  this.fetchLocationData().then(function() {
+    return fetch(self.baseUrl_ + 'c/' + code + '.json'); }).
+        then(function(response) { return response.json(); }).then(callback);
+}
 
 
 DataProvider.prototype.fetchLatestDailySlice = function(callback) {
