@@ -22,6 +22,7 @@ mapboxgl.Popup = function(options) {};
 
 mapboxgl.Popup.prototype.addTo = function(m) {};
 mapboxgl.Popup.prototype.easeTo = function(o) {};
+mapboxgl.Popup.prototype.getElement = function() {};
 mapboxgl.Popup.prototype.fitBounds = function(b) {};
 mapboxgl.Popup.prototype.remove = function() {};
 mapboxgl.Popup.prototype.setDOMContent = function(c) {};
