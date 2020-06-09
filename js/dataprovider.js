@@ -148,7 +148,9 @@ DataProvider.prototype.fetchCountryNames = function() {
         let parts = countryLines[i].split(':');
         const code = parts[0];
         const name = parts[1];
-        let bboxParts = parts[2].split('|');
+        // Check whether population count is part of this datum.
+        let bboxIndex = parts.length == 4 ? 3 : 2;
+        let bboxParts = parts[bboxIndex].split('|');
         let bboxes = [];
         for (let j = 0; j < bboxParts.length; j++) {
             let bbox = bboxParts[j].split(',');
