@@ -3,11 +3,13 @@ import os
 import re
 
 SRC_FILES = [
+    "js/graphing.js",
     "js/healthmap.js",
 ]
 
 TEST_FILES = [
     "tests/base_test.js",
+    "js/graphing_test.js",
     "js/healthmap_test.js",
 ]
 

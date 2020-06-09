@@ -26,6 +26,64 @@ let DataProvider = function(baseUrl) {
   this.dataSliceFileNames_ = [];
 };
 
+/**
+ * This takes an Object whose keys are date string, and values are arrays of
+ * GeoJSON-style features. It returns an Object with the following properties:
+ * - 'dates' maps to an array of length N containing sorted date strings
+ * - 'geoids' maps to an array containing unique geoids for this set
+ * - for each geoid in the input data set, a key of this geoid maps to an
+ *   array of length N containing corresponding values. A missing value is
+ *   represented by 'null'.
+ */
+DataProvider.convertGeoJsonFeaturesToGraphData = function(datesToFeatures, prop) {
+  let o = {};
+  let dates = new Set();
+  let geoids = new Set();
+  for (let date in datesToFeatures) {
+    dates.add(date);
+  }
+  o['dates'] = Array.from(dates).sort();
+
+  for (let i = 0; i < o['dates'].length; i++) {
+    const date = o['dates'][i];
+    for (let j = 0; j < datesToFeatures[date].length; j++) {
+      const feature = datesToFeatures[date][j];
+      const geoid = feature['properties']['geoid'];
+      if (!!geoid) {
+        geoids.add(geoid);
+      }
+    }
+  }
+  o['geoids'] = Array.from(geoids);
+
+  for (let i = 0; i < o['geoids'].length; i++) {
+    const geoid = o['geoids'][i];
+    if (!o[geoid]) {
+      o[geoid] = [];
+    }
+    for (let j = 0; j < o['dates'].length; j++) {
+      const date = o['dates'][j];
+      let added = false;
+      let k = 0;
+      while (!added && k < datesToFeatures[date].length) {
+        const feature = datesToFeatures[date][k];
+        if (feature['properties']['geoid'] == geoid) {
+          if (feature['properties'].hasOwnProperty(prop)) {
+            o[geoid].push(feature['properties'][prop]);
+            added = true;
+            break;
+          }
+        }
+        k++;
+      }
+      if (!added) {
+        o[geoid].push(null);
+      }
+    }
+  }
+  return o;
+}
+
 DataProvider.prototype.getLatestDataPerCountry = function() {
   return this.latestDataPerCountry_;
 };
@@ -118,10 +176,11 @@ DataProvider.prototype.fetchLatestCounts = function() {
 /** Loads the appropriate country-specific data. */
 DataProvider.prototype.loadCountryData = function(callback) {
   const code = document.getElementById('dash').getAttribute('c');
-  fetch(this.baseUrl_ + 'c/' + code + '.json')
-      .then(function(response) { return response.json(); })
-      .then(callback);
-};
+  let self = this;
+  this.fetchLocationData().then(function() {
+    return fetch(self.baseUrl_ + 'c/' + code + '.json'); }).
+        then(function(response) { return response.json(); }).then(callback);
+}
 
 
 DataProvider.prototype.fetchLatestDailySlice = function(callback) {

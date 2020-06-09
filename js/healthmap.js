@@ -1,5 +1,7 @@
 // Constants
 const ANIMATION_FRAME_DURATION_MS = 300;
+const POPUP_CASE_GRAPH_WIDTH_PX = 400;
+const POPUP_CASE_GRAPH_HEIGHT_PX = 300;
 const COLOR_MAP = [
   ['#67009e', '< 10', 10],
   ['#921694', '11–100', 100],
@@ -159,12 +161,23 @@ function showPopupForEvent(e) {
   totalCaseCount = props['total'];
 
   let content = document.createElement('div');
-  content.innerHTML = '<h3 class="popup-header">' + locationString +
-      '</h3>' + '<div>' + '<strong>Number of Cases: </strong>' +
-      totalCaseCount.toLocaleString() + '</div>';
+  content.innerHTML = '<h3 class="popup-header">' + locationString + '</h3>';
+
+  let relevantFeaturesByDay = {};
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
+    relevantFeaturesByDay[date] = [];
+    for (let j = 0; j < atomicFeaturesByDay[date].length; j++) {
+      const feature = atomicFeaturesByDay[date][j];
+      if (feature['properties']['geoid'] == geo_id) {
+        relevantFeaturesByDay[date].push(feature);
+      }
+    }
+  }
 
   content.appendChild(Graphing.makeCasesGraph(
-      [geo_id], 'total', atomicFeaturesByDay, dates));
+      DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
+      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX, true /* mini */));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -261,13 +274,40 @@ function countryInit() {
 }
 
 function showCountryPage(data) {
+  // De-duplicate geoids and dates, in case the data isn't well organized.
+  let geoids = new Set();
+  let dates = new Set();
   for (let date in data) {
+    dates.add(date);
+  }
+  dates = Array.from(dates).sort();
+
+  let o = {'dates': dates};
+
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i];
     for (let geoid in data[date]) {
-      let thisIsATest = true;
+      geoids.add(geoid);
     }
   }
+
+  const geoidsArray = Array.from(geoids);
+  for (let i = 0; i < geoidsArray.length; i++) {
+    const g = geoidsArray[i];
+    o[g] = [];
+    for (let j = 0; j < dates.length; j++) {
+      const date = dates[j];
+      if (!isNaN(data[date][g])) {
+        o[g].push(data[date][g]);
+      } else {
+        o[g].push(null);
+      }
+    }
+  }
+
   let dash = document.getElementById('dash');
-  // dash.appendChild(Graphing.makeCaseGraph());
+  dash.appendChild(Graphing.makeCasesGraph(
+      o, dash.clientWidth, dash.clientHeight, false /* mini */));
 }
 
 // Exports

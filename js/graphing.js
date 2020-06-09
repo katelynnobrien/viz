@@ -1,73 +1,103 @@
 let Graphing = function() {
 };
 
-const CASE_GRAPH_WIDTH_PX = 200;
-const CASE_GRAPH_HEIGHT_PX = 120;
+Graphing.CURVE_COLORS = [
+  '#4285F4',
+  '#DB4437',
+  '#F4B400',
+  '#0F9D58',
+];
 
-Graphing.sameLocation = function(geoid_a, geoid_b) {
-  // Comparing the strings directly seems sufficient for now, but we might need
-  // to round to fewer decimal places first.
-  return geoid_a == geoid_b;
-}
 
-Graphing.makeCasesGraph = function(geoids, property, features, dates) {
-  let svg = d3.select(document.createElementNS(d3.namespaces.svg, 'svg'));
-  svg.attr('width', CASE_GRAPH_WIDTH_PX).
-      attr('height', CASE_GRAPH_HEIGHT_PX);
-
-  let curves = [];
-  let allCases = [];
-  for (let g = 0; g < geoids.length; g++) {
-    let curve = [];
-    for (let i = 0; i < dates.length; i++) {
-      const date = dates[i];
-      let features = atomicFeaturesByDay[date];
-      for (let i = 0; i < features.length; i++) {
-        let f = features[i];
-        if (Graphing.sameLocation(geoids[g], f['properties']['geoid'])) {
-          f['properties']['date'] = date;
-          let c = { 'date': d3.timeParse("%Y-%m-%d")(date) };
-          c[property] = f['properties'][property];
-          curve.push(c);
-          allCases.push(c);
+Graphing.CHART_CONFIG = {
+  'type': 'line',
+  'options': {
+    'responsive': true,
+    'legend': {
+      'display': false,
+    },
+    'tooltips': {
+      'mode': 'index',
+      'intersect': false,
+    },
+    'hover': {
+      'mode': 'index',
+      'intersect': false
+    },
+    'scales': {
+      'xAxes': [{
+        'type': 'time',
+        'time': {
+          'tooltipFormat': 'll'
+        },
+        'scaleLabel': {
+          'display': false,
         }
-      }
+      }],
+      'yAxes': [
+        {'position': 'left',  'id': 'y1'},
+      ]
     }
-    curves.push(curve);
+  }
+};
+
+
+Graphing.isoDateToUnixTime = function(isoDate) {
+  const d = new Date(isoDate);
+  return d.getTime();
+};
+
+
+/**
+ * Takes a data object as returned by
+ * |DataProvider.convertGeoJsonFeaturesToGraphData|.
+ * Returns a DOM element with the requested graph.
+ */
+Graphing.makeCasesGraph = function(
+      data, totalWidth, totalHeight, mini) {
+
+  const container = document.createElement('div');
+  container.setAttribute('id', 'chart');
+  container.innerHTML = '';
+  let chart = document.createElement('canvas');
+  chart.setAttribute('width', totalWidth + 'px');
+  chart.setAttribute('height', totalHeight + 'px');
+  container.appendChild(chart);
+  let ctx = chart.getContext('2d');
+  // Deep copy.
+  let cfg = JSON.parse(JSON.stringify(Graphing.CHART_CONFIG));
+
+  let labels = [];
+  for (let i = 0; i < data['dates'].length; i++) {
+    const date = data['dates'][i];
+    labels.push(Graphing.isoDateToUnixTime(date));
   }
 
-  let xScale = d3.scaleTime()
-      .domain(d3.extent(allCases, function(c) { return c['date']; }))
-      .range([0, CASE_GRAPH_WIDTH_PX]);
-
-  svg.append('g')
-      .attr('transform', 'translate(0,' + CASE_GRAPH_HEIGHT_PX + ')')
-      .call(d3.axisBottom(xScale).tickValues([]));
-
-  let yScale = d3.scaleLinear()
-      .domain([0, d3.max(allCases, function(c) { return c[property]; })])
-      .range([CASE_GRAPH_HEIGHT_PX, 0]);
-
-  svg.append("g")
-      .call(d3.axisLeft(yScale).tickValues([]));
-
-  let lines = [];
-  for (let i = 0; i < curves.length; i++) {
-    let line = d3.line().
-      // apply the x scale to the x data
-      x(function(c) { return xScale(c['date']);}).
-      // apply the y scale to the y data
-      y(function(c) { return yScale(c[property]);});
-    lines.push(line);
+  let dataToPlot = [];
+  let i = 0;
+  for (let geoid in data) {
+    if (geoid == 'dates' || geoid == 'geoids') {
+      continue;
+    }
+    let curve = {};
+    curve['data'] = data[geoid];
+    curve['borderColor'] =
+        Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
+    const info = locationInfo[geoid].split(',');
+    let label = info[1];
+    if (!!info[0]) {
+      label = info[0] + ', ' + label;
+    }
+    curve['label'] = label;
+    dataToPlot.push(curve);
+    i += 1;
   }
 
-  for (let i = 0; i < lines.length; i++) {
-  svg.append("path")
-      .attr('fill', 'none')
-      .attr('d', lines[i](curves[i]))
-      .attr('stroke', 'steelblue')
-      .attr('stroke-width', 1.5);
-  }
+  cfg['data'] = {
+    'labels': labels,
+    'datasets': dataToPlot,
+  };
 
-  return svg.node();
+  new Chart(ctx, cfg);
+  return container;
 };
