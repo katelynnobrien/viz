@@ -10,29 +10,29 @@ Graphing.CURVE_COLORS = [
 
 
 Graphing.CHART_CONFIG = {
-  type: 'line',
-  options: {
-    responsive: true,
-    tooltips: {
-      mode: 'index',
-      intersect: false,
+  'type': 'line',
+  'options': {
+    'responsive': true,
+    'tooltips': {
+      'mode': 'index',
+      'intersect': false,
     },
-    hover: {
-      mode: 'index',
-      intersect: false
+    'hover': {
+      'mode': 'index',
+      'intersect': false
     },
-    scales: {
-      xAxes: [{
-        type: 'time',
-        time: {
-          tooltipFormat: 'll'
+    'scales': {
+      'xAxes': [{
+        'type': 'time',
+        'time': {
+          'tooltipFormat': 'll'
         },
-        scaleLabel: {
-          display: false,
+        'scaleLabel': {
+          'display': false,
         }
       }],
-      yAxes: [
-        {position: 'left',  id: 'y1'},
+      'yAxes': [
+        {'position': 'left',  'id': 'y1'},
       ]
     }
   }
@@ -85,9 +85,9 @@ Graphing.makeCasesGraph = function(
     i += 1;
   }
 
-  cfg.data = {
-    labels: labels,
-    datasets: dataToPlot,
+  cfg['data'] = {
+    'labels': labels,
+    'datasets': dataToPlot,
   };
 
   new Chart(ctx, cfg);
