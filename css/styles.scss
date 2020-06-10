@@ -401,14 +401,12 @@ div.mapboxgl-popup-content {
 }
 
 .credit {
-  position: absolute;
-  left: $sidebar-width + $sidebar-margin-end;
-  right: 4rem;
-  bottom: 5.5rem;
-  padding: .4rem .5rem;
+  right: 0;
+  bottom: .5rem;
   font-size: .8rem;
   color: #cccc;
-  line-height: 1.4;
+  left: $sidebar-width + $sidebar-margin-end;
+  position: absolute;
   text-align: center;
   z-index: 8;
   a {
@@ -416,14 +414,7 @@ div.mapboxgl-popup-content {
     padding: 0 .5rem;
     &:link, &:visited {
       color: #ccc;
-      transition: all .3s ease;
     }
-    &:focus, &:hover, &:active {
-      color: #999;
-    }
-  }
-  a + a {
-    border-left: 1px solid #ccc;
   }
 }
 
@@ -641,7 +632,7 @@ div.mapboxgl-popup-content {
   position: absolute;
   left: $sidebar-width + $sidebar-margin-end;
   right: $page-padding-end;
-  bottom: 2.75rem;
+  bottom: 2.25rem;
   padding: .25rem .5rem;
   display: flex;
   align-items: center;
