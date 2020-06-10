@@ -142,12 +142,12 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
 };
 
 
-DiseaseMap.prototype.flyToCountry = function(event) {
-  let target = event.target;
-  while (!target.getAttribute('country')) {
-    target = target.parentNode;
-  }
-  const country = countries[target.getAttribute('country')];
+/**
+ * Navigates the map to the given country.
+ * @param {string} code The code of the country to fly to.
+ */
+DiseaseMap.prototype.flyToCountry = function(code) {
+  const country = countries[code];
   const dest = country.getMainBoundingBox();
   this.mapboxMap_.fitBounds([[dest[0], dest[1]], [dest[2], dest[3]]]);
 };
