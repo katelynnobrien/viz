@@ -402,7 +402,7 @@ div.mapboxgl-popup-content {
 
 .credit {
   right: 0;
-  bottom: .5rem;
+  bottom: .7rem;
   font-size: .8rem;
   color: #cccc;
   left: $sidebar-width + $sidebar-margin-end;
@@ -421,8 +421,6 @@ div.mapboxgl-popup-content {
 .sidebar-hidden .credit {
   left: $sidebar-margin-end;
 }
-
-.credit-text { display: none }
 
 /* Mapbox UI chrome */
 
@@ -460,6 +458,10 @@ div.mapboxgl-popup-content {
 
 .mapboxgl-ctrl-bottom-left {
   margin-left: $sidebar-margin-end;
+}
+
+.mapboxgl-ctrl-bottom-right {
+  margin-right: $page-padding-end;
 }
 
 /* Country-specific pages */
