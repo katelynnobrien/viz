@@ -27,6 +27,7 @@ let map;
 let popup;
 let autoDriveMode = false;
 let threeDMode = false;
+let initialFlyTo;
 
 let currentIsoDate;
 let animationIntervalId = 0;
@@ -205,7 +206,15 @@ function showPopupForEvent(e) {
 }
 
 function flyToCountry(event) {
-  map.flyToCountry(event);
+  let target = event.target;
+  while (!target.getAttribute('country')) {
+    target = target.parentNode;
+  }
+  const code = target.getAttribute('country');
+  if (!code) {
+    return;
+  }
+  map.flyToCountry(code);
 }
 
 function showDataAtDate(iso_date) {
@@ -244,9 +253,15 @@ function processHash(url) {
       if (hashBrown.toLowerCase() == 'autodrive') {
         autoDriveMode = true;
         document.body.classList.add('autodrive');
+        continue;
       }
       if (hashBrown.toLowerCase() == '3d') {
         threeDMode = true;
+        continue;
+      }
+      // Country codes
+      if (hashBrown.length == 2 && hashBrown.toUpperCase() == hashBrown) {
+        initialFlyTo = hashBrown;
       }
     }
   }}
@@ -264,14 +279,18 @@ function init() {
   toggleSideBar();
 
   map = new DiseaseMap();
-  map.init(function() {
-  });
+  map.init(function() {});
 
   dataProvider.fetchInitialData(function() {
     // Once the initial data is here, fetch the daily slices. Start with the
     // newest.
     dataProvider.fetchLatestDailySlice(function() {
-      // This point the 'dates' array only contains the latest date.
+      // The page is now interactive and showing the latest data. If we need to
+      // focus on a given country, do that now.
+      if (!!initialFlyTo) {
+        map.flyToCountry(initialFlyTo);
+      }
+      // At this point the 'dates' array only contains the latest date.
       // Show the latest data when we have that before fetching older data.
       map.showDataAtDate(dates[0]);
       dataProvider.fetchDailySlices(onAllDataFetched);
