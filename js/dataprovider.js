@@ -326,7 +326,7 @@ DataProvider.prototype.updateCountryListCounts = function() {
       const population = country.getPopulation();
       if (!!population) {
         countToShow = '' + (100 * countToShow / country.getPopulation()).
-              toFixed(2) + '%';
+              toFixed(3) + '%';
       } else {
         countToShow = '?';
       }
@@ -334,5 +334,31 @@ DataProvider.prototype.updateCountryListCounts = function() {
       countToShow = countToShow.toLocaleString();
     }
     span.textContent = countToShow;
+  }
+  this.sortCountryList();
+};
+
+
+DataProvider.prototype.sortCountryList = function() {
+  const list = document.getElementById('location-list');
+  let items = list.children;
+  let itemsArray = [];
+  for (let i = 0; i < items.length; i++) {
+    itemsArray.push(items[i]);
+  }
+  itemsArray.sort(function(a, b) {
+    const str_a = a.getElementsByClassName(
+        'num')[0].textContent.replace(/,/g, '');
+    const str_b = b.getElementsByClassName(
+        'num')[0].textContent.replace(/,/g, '');
+    if (str_a == '?') { return 1; }
+    if (str_b == '?') { return -1;}
+    const count_a = parseFloat(str_a);
+    const count_b = parseFloat(str_b);
+    return count_a == count_b ? 0 : (count_a < count_b ? 1 : -1);
+  });
+
+  for (let i = 0; i < itemsArray.length; i++) {
+    list.appendChild(itemsArray[i]);
   }
 };
