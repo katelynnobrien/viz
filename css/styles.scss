@@ -443,11 +443,6 @@ div.mapboxgl-popup-content {
   width: 400px;
 }
 
-#dash #chart {
-  height: 100%;
-  width: 100%;
-}
-
 /* Overrides for autodrive mode: remove most interactive elements */
 
 .autodrive #sidebar, .autodrive .credit,
@@ -467,11 +462,25 @@ div.mapboxgl-popup-content {
 /* Country-specific pages */
 
 #dash {
-  height: 94%;
-  margin: 0 auto;
-  position: relative;
-  top: 3%;
-  width: 94%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+#dash #charts {
+  flex-grow: 1;
+}
+
+#charts {
+  margin: 1ex;
+}
+
+#dash h1 {
+  border: none;
+  flex-grow: 0;
+  text-align: center;
 }
 
 /* Modal */

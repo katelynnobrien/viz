@@ -342,9 +342,9 @@ function showCountryPage(data) {
     }
   }
 
-  let dash = document.getElementById('dash');
-  dash.appendChild(Graphing.makeCasesGraph(
-      o, dash.clientWidth, dash.clientHeight, false /* mini */));
+  let chartsEl = document.getElementById('charts');
+  chartsEl.appendChild(Graphing.makeCasesGraph(
+      o, chartsEl.clientWidth, chartsEl.clientHeight, false /* mini */));
 }
 
 // Exports
