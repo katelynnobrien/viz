@@ -148,13 +148,16 @@ DataProvider.prototype.fetchCountryNames = function() {
         let parts = countryLines[i].split(':');
         const code = parts[0];
         const name = parts[1];
-        let bboxParts = parts[2].split('|');
+        // Check whether population count is part of this datum.
+        const population = parts.length == 4 ? parseInt(parts[2], 10) : 0;
+        let bboxIndex = parts.length == 4 ? 3 : 2;
+        let bboxParts = parts[bboxIndex].split('|');
         let bboxes = [];
         for (let j = 0; j < bboxParts.length; j++) {
             let bbox = bboxParts[j].split(',');
             bboxes.push(bbox);
         }
-        let c = new Country(code, name, bboxes);
+        let c = new Country(code, name, population, bboxes);
         countries[code] = c;
         countriesByName[name] = c;
       }
@@ -283,7 +286,7 @@ DataProvider.prototype.fetchJhuData = function() {
             location['attributes']['cum_conf'].replace(/,/g, ''),
             10) || 0;
         let legendGroup = 'default';
-        self.latestDataPerCountry_[geoid] = [name, cumConf];
+        self.latestDataPerCountry_[code] = [cumConf];
         // No city or province, just the country name.
         locationInfo[geoid] = ',,' + name;
         if (cumConf <= 10) {
@@ -301,10 +304,61 @@ DataProvider.prototype.fetchJhuData = function() {
         button.setAttribute('country', code);
         button.onclick = flyToCountry;
         button.innerHTML = '<span class="label">' + name + '</span>' +
-            '<span class="num legend-group-' + legendGroup + '">' +
-            cumConf.toLocaleString() + '</span></span>';
+            '<span class="num legend-group-' + legendGroup +
+            '"></span>';
         item.appendChild(button);
         countryList.appendChild(item);
       }
+      self.updateCountryListCounts();
     });
 }
+
+
+DataProvider.prototype.updateCountryListCounts = function() {
+  const list = document.getElementById('location-list');
+  let countSpans = list.getElementsByClassName('num');
+  for (let i = 0; i < countSpans.length; i++) {
+    let span = countSpans[i];
+    const code = span.parentNode.getAttribute('country');
+    const country = countries[code];
+    let countToShow = this.getLatestDataPerCountry()[code][0];
+    if (document.getElementById('percapita').checked) {
+      const population = country.getPopulation();
+      if (!!population) {
+        countToShow = '' + (100 * countToShow / country.getPopulation()).
+              toFixed(3) + '%';
+      } else {
+        countToShow = '?';
+      }
+    } else {
+      countToShow = countToShow.toLocaleString();
+    }
+    span.textContent = countToShow;
+  }
+  this.sortCountryList();
+};
+
+
+DataProvider.prototype.sortCountryList = function() {
+  const list = document.getElementById('location-list');
+  let items = list.children;
+  let itemsArray = [];
+  for (let i = 0; i < items.length; i++) {
+    itemsArray.push(items[i]);
+  }
+  itemsArray.sort(function(a, b) {
+    const str_a = a.getElementsByClassName(
+        'num')[0].textContent.replace(/,/g, '');
+    const str_b = b.getElementsByClassName(
+        'num')[0].textContent.replace(/,/g, '');
+    if (str_a == '?') { return 1; }
+    if (str_b == '?') { return -1;}
+    const count_a = parseFloat(str_a);
+    const count_b = parseFloat(str_b);
+    return count_a == count_b ? 0 : (count_a < count_b ? 1 : -1);
+  });
+
+  for (let i = 0; i < itemsArray.length; i++) {
+    list.appendChild(itemsArray[i]);
+  }
+};
