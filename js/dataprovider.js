@@ -286,7 +286,7 @@ DataProvider.prototype.fetchJhuData = function() {
             location['attributes']['cum_conf'].replace(/,/g, ''),
             10) || 0;
         let legendGroup = 'default';
-        self.latestDataPerCountry_[geoid] = [name, cumConf];
+        self.latestDataPerCountry_[code] = [cumConf];
         // No city or province, just the country name.
         locationInfo[geoid] = ',,' + name;
         if (cumConf <= 10) {
@@ -304,10 +304,35 @@ DataProvider.prototype.fetchJhuData = function() {
         button.setAttribute('country', code);
         button.onclick = flyToCountry;
         button.innerHTML = '<span class="label">' + name + '</span>' +
-            '<span class="num legend-group-' + legendGroup + '">' +
-            cumConf.toLocaleString() + '</span></span>';
+            '<span class="num legend-group-' + legendGroup +
+            '"></span>';
         item.appendChild(button);
         countryList.appendChild(item);
       }
+      self.updateCountryListCounts();
     });
 }
+
+
+DataProvider.prototype.updateCountryListCounts = function() {
+  const list = document.getElementById('location-list');
+  let countSpans = list.getElementsByClassName('num');
+  for (let i = 0; i < countSpans.length; i++) {
+    let span = countSpans[i];
+    const code = span.parentNode.getAttribute('country');
+    const country = countries[code];
+    let countToShow = this.getLatestDataPerCountry()[code][0];
+    if (document.getElementById('percapita').checked) {
+      const population = country.getPopulation();
+      if (!!population) {
+        countToShow = '' + (100 * countToShow / country.getPopulation()).
+              toFixed(2) + '%';
+      } else {
+        countToShow = '?';
+      }
+    } else {
+      countToShow = countToShow.toLocaleString();
+    }
+    span.textContent = countToShow;
+  }
+};

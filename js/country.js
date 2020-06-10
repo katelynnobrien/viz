@@ -33,12 +33,19 @@ let Country = function(code, name, population, boundingBoxes) {
   this.boundingBoxes_ = boundingBoxes;
 };
 
+/** @return {string} */
 Country.prototype.getName = function() {
   return this.name_;
 }
 
+/** @return {string} */
 Country.prototype.getCode = function() {
   return this.code_;
+}
+
+/** @return {number} */
+Country.prototype.getPopulation = function() {
+  return this.population_;
 }
 
 Country.prototype.getMainBoundingBox = function() {
