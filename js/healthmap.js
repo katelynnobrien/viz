@@ -328,26 +328,38 @@ function completenessInit() {
       }
 
       let comparisons = [];
+      const ratioPrecision = 1;
       for (let c in aggregates) {
           comparisons.push([c, totalsFromIndividuals[c] || 0, aggregates[c]]);
       }
       // Sort by completeness level.
       comparisons.sort(function(a, b) {
-        return (a[1] / a[2]) >= (b[1] / b[2]) ? 1 : -1;
+        const ratio_a = 100 * a[1] / a[2];
+        const ratio_b = 100 * b[1] / b[2];
+        const ratio_a_str = ratio_a.toFixed(ratioPrecision);
+        const ratio_b_str = ratio_b.toFixed(ratioPrecision);
+        if (ratio_a_str == ratio_b_str) {
+          // If the ratios are the same, order by the number of missing cases.
+          const missing_a = a[2] - a[1];
+          const missing_b = b[2] - b[1];
+          return (missing_a <= missing_b) ? 1 : -1;
+        }
+        return (ratio_a > ratio_b) ? 1 : -1;
       });
       let container = document.getElementById('data');
       container.innerHTML = '';
-      let list = document.createElement('ul');
+      let list = document.createElement('table');
+      list.innerHTML = '<tr><th>Country</th><th>Completion</th><th>"Line list" vs JHU aggregate</th></tr>';
       for (let i = 0; i < comparisons.length; i++) {
         const code = comparisons[i][0];
         const name = countries[code].getName();
         const individual = comparisons[i][1];
         const aggregate = comparisons[i][2];
-        const percentage = (100 * individual / aggregate).toFixed(1);
-        let item = document.createElement('li');
-        item.innerHTML = name + ': <b>' + percentage + '%</b>' +
-              ' (' + individual + ' vs ' + aggregate + ')';
-        list.appendChild(item);
+        const percentage = (100 * individual / aggregate).toFixed(ratioPrecision);
+        let row = document.createElement('tr');
+        row.innerHTML = '<td>' + name + '</td><td><b>' + percentage + '%</b>' +
+              '</td><td>' + individual + ' vs ' + aggregate + '</td>';
+        list.appendChild(row);
       }
       container.appendChild(list);
     });
