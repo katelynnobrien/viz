@@ -334,14 +334,17 @@ function completenessInit() {
       }
       // Sort by completeness level.
       comparisons.sort(function(a, b) {
-        const ratio_a = (100 * a[1] / a[2]).toFixed(ratioPrecision);
-        const ratio_b = (100 * b[1] / b[2]).toFixed(ratioPrecision);
-        if (ratio_a > ratio_b) { return 1; }
-        if (ratio_a < ratio_b) { return -1; }
-        // If the ratios are the same, order by the number of missing cases.
-        const missing_a = a[2] - a[1];
-        const missing_b = b[2] - b[1];
-        return (missing_a <= missing_b) ? 1 : -1;
+        const ratio_a = 100 * a[1] / a[2];
+        const ratio_b = 100 * b[1] / b[2];
+        const ratio_a_str = ratio_a.toFixed(ratioPrecision);
+        const ratio_b_str = ratio_b.toFixed(ratioPrecision);
+        if (ratio_a_str == ratio_b_str) {
+          // If the ratios are the same, order by the number of missing cases.
+          const missing_a = a[2] - a[1];
+          const missing_b = b[2] - b[1];
+          return (missing_a <= missing_b) ? 1 : -1;
+        }
+        return (ratio_a > ratio_b) ? 1 : -1;
       });
       let container = document.getElementById('data');
       container.innerHTML = '';
