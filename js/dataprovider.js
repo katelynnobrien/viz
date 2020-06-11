@@ -239,7 +239,12 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
       continue;
     }
     // City, province, country.
-    let location = locationInfo[feature['properties']['geoid']].split(',');
+    const locationStr = locationInfo[feature['properties']['geoid']];
+    let location = locationStr.split(',');
+    // TODO: Only split with '|' once the new version of the data is out.
+    if (locationStr.indexOf('|') != -1) {
+      let location = locationStr.split('|');
+    }
     const countryCode = location[2];
     if (countryCode.length != 2) {
       console.log('Warning: invalid country code: ' + countryCode);
