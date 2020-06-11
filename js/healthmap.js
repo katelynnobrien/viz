@@ -337,17 +337,17 @@ function completenessInit() {
       });
       let container = document.getElementById('data');
       container.innerHTML = '';
-      let list = document.createElement('ul');
+      let list = document.createElement('table');
       for (let i = 0; i < comparisons.length; i++) {
         const code = comparisons[i][0];
         const name = countries[code].getName();
         const individual = comparisons[i][1];
         const aggregate = comparisons[i][2];
         const percentage = (100 * individual / aggregate).toFixed(1);
-        let item = document.createElement('li');
-        item.innerHTML = name + ': <b>' + percentage + '%</b>' +
-              ' (' + individual + ' vs ' + aggregate + ')';
-        list.appendChild(item);
+        let row = document.createElement('tr');
+        row.innerHTML = '<td>' + name + '</td><td><b>' + percentage + '%</b>' +
+              '</td><td>' + individual + ' vs ' + aggregate + '</td>';
+        list.appendChild(row);
       }
       container.appendChild(list);
     });
