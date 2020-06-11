@@ -7,14 +7,17 @@ let DataProvider = function(baseUrl) {
    */
   this.baseUrl_ = baseUrl;
 
+  // An object mapping dates to JSON objects with the corresponding data.
+  // for that day, grouped by country, province, or ungrouped (smallest
+  // granularity level).
   /** @private */
-  this.countryFeaturesByDay_ = [];
+  this.countryFeaturesByDay_ = {};
 
   /** @private */
-  this.provinceFeaturesByDay_ = [];
+  this.provinceFeaturesByDay_ = {};
 
   /** @private */
-  this.cityFeaturesByDay_ = [];
+  this.cityFeaturesByDay_ = {};
 
   /**
    * A map from country names to most recent data (case count, etc.).
@@ -86,6 +89,10 @@ DataProvider.convertGeoJsonFeaturesToGraphData = function(datesToFeatures, prop)
 
 DataProvider.prototype.getLatestDataPerCountry = function() {
   return this.latestDataPerCountry_;
+};
+
+DataProvider.prototype.getCountryFeaturesForDay = function(date) {
+  return this.countryFeaturesByDay_[date];
 };
 
 DataProvider.prototype.fetchInitialData = function(callback) {
@@ -264,10 +271,9 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
 
   dates.unshift(currentDate);
 
-  countryFeaturesByDay[currentDate] = countryFeatures;
-  provinceFeaturesByDay[currentDate] = provinceFeatures;
+  this.countryFeaturesByDay_[currentDate] = countryFeatures;
+  this.provinceFeaturesByDay_[currentDate] = provinceFeatures;
   atomicFeaturesByDay[currentDate] = features;
-  console.log(countryFeaturesByDay[currentDate]);
   if (!!timeControl) {
     updateTimeControl();
   }

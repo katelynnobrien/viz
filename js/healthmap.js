@@ -32,11 +32,6 @@ let initialFlyTo;
 let currentIsoDate;
 let animationIntervalId = 0;
 
-// An object mapping dates to JSON objects with the corresponding data.
-// for that day, grouped by country, province, or ungrouped (smallest
-// granularity level).
-let countryFeaturesByDay = {};
-let provinceFeaturesByDay = {};
 let atomicFeaturesByDay = {};
 
 let timeControl;
@@ -316,8 +311,45 @@ function completenessInit() {
   dataProvider.fetchInitialData(function() {
     // We only need the latest daily slice for the data completeness page.
     dataProvider.fetchLatestDailySlice(function() {
-      var completenessData = {};
-      console.log(dataProvider.getLatestDataPerCountry());
+      const latestCountryFeatures = dataProvider.getCountryFeaturesForDay(
+          dates[0]);
+
+      const aggregates = {};
+      const totalsFromIndividuals = {};
+
+      const latestDataPerCountry = dataProvider.getLatestDataPerCountry();
+      for (let c in latestDataPerCountry) {
+        aggregates[c] = latestDataPerCountry[c][0];
+      }
+
+      for (let c in latestCountryFeatures) {
+        const data = latestCountryFeatures[c];
+        totalsFromIndividuals[c] = data['total'];
+      }
+
+      let comparisons = [];
+      for (let c in aggregates) {
+          comparisons.push([c, totalsFromIndividuals[c] || 0, aggregates[c]]);
+      }
+      // Sort by completeness level.
+      comparisons.sort(function(a, b) {
+        return (a[1] / a[2]) >= (b[1] / b[2]) ? 1 : -1;
+      });
+      let container = document.getElementById('data');
+      container.innerHTML = '';
+      let list = document.createElement('ul');
+      for (let i = 0; i < comparisons.length; i++) {
+        const code = comparisons[i][0];
+        const name = countries[code].getName();
+        const individual = comparisons[i][1];
+        const aggregate = comparisons[i][2];
+        const percentage = (100 * individual / aggregate).toFixed(1);
+        let item = document.createElement('li');
+        item.innerHTML = name + ': <b>' + percentage + '%</b>' +
+              ' (' + individual + ' vs ' + aggregate + ')';
+        list.appendChild(item);
+      }
+      container.appendChild(list);
     });
   });
 }
