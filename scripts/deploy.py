@@ -26,6 +26,11 @@ INCLUDE_LIST = [
     "img/*",
 ]
 
+HTML_FILES = [
+    "country.html",
+    "index.html",
+    "completeness/index.html",
+]
 
 # Returns True if everything we need is here, False otherwise.
 def check_dependencies():
@@ -98,24 +103,23 @@ def link_to_compiled_js_in_html(html_file):
 
 def use_compiled_js(quiet=False):
     js_compilation.compile_js(quiet)
-    link_to_compiled_js_in_html("index.html")
-    link_to_compiled_js_in_html("country.html")
-    link_to_compiled_js_in_html("completeness/index.html")
+    for h in HTML_FILES:
+        link_to_compiled_js_in_html(h)
 
 
 # Returns whether the operation was a success.
 def backup_pristine_files():
     success = True
-    success &= os.system("cp index.html index.html.orig") == 0
-    success &= os.system("cp country.html country.html.orig") == 0
+    for h in HTML_FILES:
+        success &= os.system("cp " + h + " " + h + ".orig") == 0
     return success
 
 
 # Returns whether the operation was a success.
 def restore_pristine_files():
     success = True
-    success &= os.system("mv index.html.orig index.html") == 0
-    success &= os.system("mv country.html.orig country.html") == 0
+    for h in HTML_FILES:
+        success &= os.system("mv " + h + ".orig " + h) == 0
     return success
 
 
