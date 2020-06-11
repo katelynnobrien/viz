@@ -21,6 +21,7 @@ INCLUDE_LIST = [
     "index.html",
     "c",
     "js/bundle.js",
+    "completeness/index.html",
     "css/styles.css",
     "img/*",
 ]
@@ -99,6 +100,7 @@ def use_compiled_js(quiet=False):
     js_compilation.compile_js(quiet)
     link_to_compiled_js_in_html("index.html")
     link_to_compiled_js_in_html("country.html")
+    link_to_compiled_js_in_html("completeness/index.html")
 
 
 # Returns whether the operation was a success.

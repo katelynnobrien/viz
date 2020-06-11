@@ -310,6 +310,18 @@ function countryInit() {
   dataProvider.loadCountryData(showCountryPage);
 }
 
+function completenessInit() {
+  dataProvider = new DataProvider(
+      'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
+  dataProvider.fetchInitialData(function() {
+    // We only need the latest daily slice for the data completeness page.
+    dataProvider.fetchLatestDailySlice(function() {
+      var completenessData = {};
+      console.log(dataProvider.getLatestDataPerCountry());
+    });
+  });
+}
+
 function showCountryPage(data) {
   // De-duplicate geoids and dates, in case the data isn't well organized.
   let geoids = new Set();
@@ -342,9 +354,9 @@ function showCountryPage(data) {
     }
   }
 
-  let dash = document.getElementById('dash');
-  dash.appendChild(Graphing.makeCasesGraph(
-      o, dash.clientWidth, dash.clientHeight, false /* mini */));
+  let chartsEl = document.getElementById('charts');
+  chartsEl.appendChild(Graphing.makeCasesGraph(
+      o, chartsEl.clientWidth, chartsEl.clientHeight, false /* mini */));
 }
 
 // Exports
@@ -356,3 +368,4 @@ globalThis['fetchAboutPage'] = fetchAboutPage;
 globalThis['filterList'] = filterList;
 globalThis['init'] = init;
 globalThis['countryInit'] = countryInit;
+globalThis['completenessInit'] = completenessInit;

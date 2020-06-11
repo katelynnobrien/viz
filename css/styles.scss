@@ -401,14 +401,12 @@ div.mapboxgl-popup-content {
 }
 
 .credit {
-  position: absolute;
-  left: $sidebar-width + $sidebar-margin-end;
-  right: 4rem;
-  bottom: 5.5rem;
-  padding: .4rem .5rem;
+  right: 0;
+  bottom: .7rem;
   font-size: .8rem;
   color: #cccc;
-  line-height: 1.4;
+  left: $sidebar-width + $sidebar-margin-end;
+  position: absolute;
   text-align: center;
   z-index: 8;
   a {
@@ -416,22 +414,13 @@ div.mapboxgl-popup-content {
     padding: 0 .5rem;
     &:link, &:visited {
       color: #ccc;
-      transition: all .3s ease;
     }
-    &:focus, &:hover, &:active {
-      color: #999;
-    }
-  }
-  a + a {
-    border-left: 1px solid #ccc;
   }
 }
 
 .sidebar-hidden .credit {
   left: $sidebar-margin-end;
 }
-
-.credit-text { display: none }
 
 /* Mapbox UI chrome */
 
@@ -454,11 +443,6 @@ div.mapboxgl-popup-content {
   width: 400px;
 }
 
-#dash #chart {
-  height: 100%;
-  width: 100%;
-}
-
 /* Overrides for autodrive mode: remove most interactive elements */
 
 .autodrive #sidebar, .autodrive .credit,
@@ -471,14 +455,32 @@ div.mapboxgl-popup-content {
   margin-left: $sidebar-margin-end;
 }
 
+.mapboxgl-ctrl-bottom-right {
+  margin-right: $page-padding-end;
+}
+
 /* Country-specific pages */
 
 #dash {
-  height: 94%;
-  margin: 0 auto;
-  position: relative;
-  top: 3%;
-  width: 94%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+
+#dash #charts {
+  flex-grow: 1;
+}
+
+#charts {
+  margin: 1ex;
+}
+
+#dash h1 {
+  border: none;
+  flex-grow: 0;
+  text-align: center;
 }
 
 /* Modal */
@@ -641,7 +643,7 @@ div.mapboxgl-popup-content {
   position: absolute;
   left: $sidebar-width + $sidebar-margin-end;
   right: $page-padding-end;
-  bottom: 2.75rem;
+  bottom: 2.25rem;
   padding: .25rem .5rem;
   display: flex;
   align-items: center;

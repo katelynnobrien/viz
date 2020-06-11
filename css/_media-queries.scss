@@ -111,16 +111,13 @@
   .legend-header {
     font-size: .8rem;
   }
-  .credit-text {
-    display: inline;
-  }
 }
 
 // smaller mobile devices
 @media
 screen and (max-height: $breakpoint-landscape-sm-max) and (orientation: landscape),
 screen and (max-height: $breakpoint-portrait-sm-max) and (orientation: portrait) {
-  .mapboxgl-ctrl-top-right, .credit-text {
+  .mapboxgl-ctrl-top-right {
     display: none;
   }
 }

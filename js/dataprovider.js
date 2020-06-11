@@ -170,9 +170,15 @@ DataProvider.prototype.fetchLatestCounts = function() {
   return fetch(this.baseUrl_ + 'latestCounts.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      const totalCases = parseInt(jsonData[0]['caseCount'], 10);
-      document.getElementById('total-cases').innerText = totalCases.toLocaleString();
-      document.getElementById('last-updated-date').innerText = jsonData[0]['date'];
+      const totalCasesEl = document.getElementById('total-cases');
+      const lastUpdatedDateEl = document.getElementById('last-updated-date');
+      if (!!totalCasesEl) {
+        const totalCases = parseInt(jsonData[0]['caseCount'], 10);
+        totalCasesEl.innerText = totalCases.toLocaleString();
+      }
+      if (!!lastUpdatedDateEl) {
+        lastUpdatedDateEl.innerText = jsonData[0]['date'];
+      }
     });
 };
 
@@ -234,16 +240,21 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
     }
     // City, province, country.
     let location = locationInfo[feature['properties']['geoid']].split(',');
+    const countryCode = location[2];
+    if (countryCode.length != 2) {
+      console.log('Warning: invalid country code: ' + countryCode);
+      console.log('From ' + location);
+    }
     if (!provinceFeatures[location[1]]) {
       provinceFeatures[location[1]] = {'total': 0, 'new': 0};
     }
     provinceFeatures[location[1]]['total'] += feature['properties']['total'];
     provinceFeatures[location[1]]['new'] += feature['properties']['new'];
-    if (!countryFeatures[location[2]]) {
-      countryFeatures[location[2]] = {'total': 0, 'new': 0};
+    if (!countryFeatures[countryCode]) {
+      countryFeatures[countryCode] = {'total': 0, 'new': 0};
     }
-    countryFeatures[location[2]]['total'] += feature['properties']['total'];
-    countryFeatures[location[2]]['new'] += feature['properties']['new'];
+    countryFeatures[countryCode]['total'] += feature['properties']['total'];
+    countryFeatures[countryCode]['new'] += feature['properties']['new'];
   }
 
   dates.unshift(currentDate);
@@ -251,7 +262,10 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
   countryFeaturesByDay[currentDate] = countryFeatures;
   provinceFeaturesByDay[currentDate] = provinceFeatures;
   atomicFeaturesByDay[currentDate] = features;
-  updateTimeControl();
+  console.log(countryFeaturesByDay[currentDate]);
+  if (!!timeControl) {
+    updateTimeControl();
+  }
 };
 
 
@@ -260,12 +274,14 @@ DataProvider.prototype.fetchJhuData = function() {
   return fetch(this.baseUrl_ + 'jhu.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
+      // If the page we are on doesn't have the corresponding UI, we don't need
+      // to do anything else.
+      let countryList = document.getElementById('location-list');
       let obj = jsonData['features'];
       // Sort according to decreasing confirmed cases.
       obj.sort(function(a, b) {
         return b['attributes']['cum_conf'] - a['attributes']['cum_conf'];
       });
-      let countryList = document.getElementById('location-list');
       for (let i = 0; i < obj.length; ++i) {
         let location = obj[i];
         if (!location || !location['attributes'] || !location['centroid']) {
@@ -287,29 +303,33 @@ DataProvider.prototype.fetchJhuData = function() {
             10) || 0;
         let legendGroup = 'default';
         self.latestDataPerCountry_[code] = [cumConf];
-        // No city or province, just the country name.
-        locationInfo[geoid] = ',,' + name;
-        if (cumConf <= 10) {
-          legendGroup = '10';
-        } else if (cumConf <= 100) {
-          legendGroup = '100';
-        } else if (cumConf <= 500) {
-          legendGroup = '500';
-        } else if (cumConf <= 2000) {
-          legendGroup = '2000';
-        }
+        if (!!countryList) {
+          // No city or province, just the country name.
+          locationInfo[geoid] = ',,' + name;
+          if (cumConf <= 10) {
+            legendGroup = '10';
+          } else if (cumConf <= 100) {
+            legendGroup = '100';
+          } else if (cumConf <= 500) {
+            legendGroup = '500';
+          } else if (cumConf <= 2000) {
+            legendGroup = '2000';
+          }
 
-        let item = document.createElement('li');
-        let button = document.createElement('button');
-        button.setAttribute('country', code);
-        button.onclick = flyToCountry;
-        button.innerHTML = '<span class="label">' + name + '</span>' +
-            '<span class="num legend-group-' + legendGroup +
-            '"></span>';
-        item.appendChild(button);
-        countryList.appendChild(item);
+          let item = document.createElement('li');
+          let button = document.createElement('button');
+          button.setAttribute('country', code);
+          button.onclick = flyToCountry;
+          button.innerHTML = '<span class="label">' + name + '</span>' +
+              '<span class="num legend-group-' + legendGroup +
+              '"></span>';
+          item.appendChild(button);
+          countryList.appendChild(item);
+        }
       }
-      self.updateCountryListCounts();
+      if (!!countryList) {
+        self.updateCountryListCounts();
+      }
     });
 }
 
@@ -362,3 +382,7 @@ DataProvider.prototype.sortCountryList = function() {
     list.appendChild(itemsArray[i]);
   }
 };
+
+
+DataProvider.prototype.getCompletenessData = function(callback) {
+}

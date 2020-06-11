@@ -127,7 +127,7 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
   const paint = {
     'circle-radius': [
       'case', ['<', 0, ['number', ['get', featureProperty]]],
-      ['*', ['log10', ['sqrt', ['get', featureProperty]]], 10],
+      ['*', ['log10', ['sqrt', ['get', featureProperty]]], 5],
       0],
     'circle-color': circleColor,
     'circle-opacity': 0.6,
