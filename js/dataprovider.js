@@ -243,7 +243,7 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
     let location = locationStr.split(',');
     // TODO: Only split with '|' once the new version of the data is out.
     if (locationStr.indexOf('|') != -1) {
-      let location = locationStr.split('|');
+      location = locationStr.split('|');
     }
     const countryCode = location[2];
     if (countryCode.length != 2) {
@@ -309,8 +309,8 @@ DataProvider.prototype.fetchJhuData = function() {
         let legendGroup = 'default';
         self.latestDataPerCountry_[code] = [cumConf];
         if (!!countryList) {
-          // No city or province, just the country name.
-          locationInfo[geoid] = ',,' + name;
+          // No city or province, just the country code.
+          locationInfo[geoid] = '||' + code;
           if (cumConf <= 10) {
             legendGroup = '10';
           } else if (cumConf <= 100) {
