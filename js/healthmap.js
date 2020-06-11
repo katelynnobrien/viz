@@ -342,8 +342,6 @@ function completenessInit() {
         const missing_a = a[2] - a[1];
         const missing_b = b[2] - b[1];
         return (missing_a <= missing_b) ? 1 : -1;
-
-        return (a[1] / a[2]) >= (b[1] / b[2]) ? 1 : -1;
       });
       let container = document.getElementById('data');
       container.innerHTML = '';
