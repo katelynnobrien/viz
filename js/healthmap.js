@@ -147,7 +147,7 @@ function showPopupForEvent(e) {
 
   let totalCaseCount = 0;
   // Country, province, city
-  let location = locationInfo[geo_id].split(',');
+  let location = locationInfo[geo_id].split('|');
   // Replace country code with name if necessary
   if (location[2].length == 2) {
     location[2] = countries[location[2]].getName();

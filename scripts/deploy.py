@@ -144,8 +144,6 @@ def copy_contents(target_path, quiet=False):
 
     for pair in to_copy:
         cmd = "cp -a " + pair[0] + " " + pair[1]
-        if not quiet:
-            print(cmd)
         success &= (os.system(cmd) == 0)
 
     return success
