@@ -38,16 +38,11 @@ DiseaseMap.formatFeature = function(feature) {
   if (threeDMode) {
     const half = DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG / 2;
     featureCoords = [[
-[-67.13734351262877, 45.137451890638886],
-[-66.96466, 44.8097],
-[-68.03252, 44.3252],
-[-69.06, 43.98],
-[-67.13734351262877, 45.137451890638886]
-      // [lng + half, lat + half],
-      // [lng - half, lat + half],
-      // [lng - half, lat - half],
-      // [lng - half, lat + half],
-      // [lng + half, lat + half],
+      [lng + half, lat + half],
+      [lng - half, lat + half],
+      [lng - half, lat - half],
+      [lng + half, lat - half],
+      [lng + half, lat + half],
     ]];
   }
   feature['geometry'] = {
@@ -115,7 +110,7 @@ DiseaseMap.prototype.init = function(callback) {
         DiseaseMap.formatFeature({
           'properties': {
               'height': 100000,
-              'geoid': '-68.03252|44.3252',
+              'geoid': '45.4019|-68.6502',
           }
         })]),
     });
