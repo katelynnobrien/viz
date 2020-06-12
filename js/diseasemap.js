@@ -7,7 +7,7 @@ let DiseaseMap = function() {
 
 DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
 
-DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.8;
+DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.4;
 
 /**
  * Takes an array of features, and bundles them in a way that the map API
@@ -50,7 +50,7 @@ DiseaseMap.formatFeature = function(feature) {
     'coordinates': featureCoords,
   };
   if (threeDMode) {
-    feature['properties']['height'] = 100000;
+    feature['properties']['height'] = 10 * feature['properties']['total'];
   }
   return feature;
 };
@@ -104,16 +104,7 @@ DiseaseMap.prototype.init = function(callback) {
       'type': 'geojson',
       'data': DiseaseMap.formatFeatureSet([])
     });
-    self.mapboxMap_.addSource('test', {
-      'type': 'geojson',
-      'data': DiseaseMap.formatFeatureSet([
-        DiseaseMap.formatFeature({
-          'properties': {
-              'height': 100000,
-              'geoid': '45.4019|-68.6502',
-          }
-        })]),
-    });
+
     let circleColorForTotals = ['step', ['get', 'total']];
     // Don't use the last color here (for new cases).
     for (let i = 0; i < COLOR_MAP.length - 1; i++) {
