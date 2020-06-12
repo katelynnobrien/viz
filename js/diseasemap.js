@@ -7,7 +7,7 @@ let DiseaseMap = function() {
 
 DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
 
-DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.1;
+DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.8;
 
 /**
  * Takes an array of features, and bundles them in a way that the map API
@@ -31,24 +31,34 @@ DiseaseMap.formatFeature = function(feature) {
   }
   let coords = feature['properties']['geoid'].split('|');
   const featureType = threeDMode ? 'Polygon' : 'Point';
-  const lat = coords[0];
-  const lng = coords[1];
+  const lat = parseFloat(coords[0]);
+  const lng = parseFloat(coords[1]);
   // Flip latitude and longitude.
   let featureCoords = [lng, lat];
   if (threeDMode) {
     const half = DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG / 2;
     featureCoords = [[
-      [lng + half, lat + half],
-      [lng - half, lat + half],
-      [lng - half, lat + half],
-      [lng - half, lat + half],
-      [lng + half, lat + half],
+[-67.13734351262877, 45.137451890638886],
+[-66.96466, 44.8097],
+[-68.03252, 44.3252],
+[-69.06, 43.98],
+[-70.11617, 43.68405],
+[-67.79141211614706, 45.702585354182816],
+[-67.13734351262877, 45.137451890638886]
+      // [lng + half, lat + half],
+      // [lng - half, lat + half],
+      // [lng - half, lat - half],
+      // [lng - half, lat + half],
+      // [lng + half, lat + half],
     ]];
   }
   feature['geometry'] = {
     'type': featureType,
     'coordinates': featureCoords,
   };
+  if (threeDMode && !!feature['properties']['height']) {
+    console.log(feature);
+  }
   return feature;
 };
 
@@ -103,26 +113,14 @@ DiseaseMap.prototype.init = function(callback) {
     });
     self.mapboxMap_.addSource('test', {
       'type': 'geojson',
-      'data': DiseaseMap.formatFeatureSet([{
-            'type': 'Feature',
-            'geometry': {
-              'type': 'Polygon',
-              'coordinates': [[
-[-67.13734351262877, 45.137451890638886],
-[-66.96466, 44.8097],
-[-68.03252, 44.3252],
-[-69.06, 43.98],
-[-70.11617, 43.68405],
-[-67.79141211614706, 45.702585354182816],
-[-67.13734351262877, 45.137451890638886]]
-              ],
-            },
-            'properties': {
+      'data': DiseaseMap.formatFeatureSet([
+        DiseaseMap.formatFeature({
+          'properties': {
               'height': 100000,
-            }
-          }]),
+              'geoid': '-68.03252|44.3252',
           }
-    );
+        })]),
+    });
     let circleColorForTotals = ['step', ['get', 'total']];
     // Don't use the last color here (for new cases).
     for (let i = 0; i < COLOR_MAP.length - 1; i++) {
