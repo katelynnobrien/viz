@@ -160,11 +160,8 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
       // 'fill-extrusion-base': 0,
       'fill-extrusion-height': ['get', 'height'],
       'fill-extrusion-color': circleColor,
-      // 'fill-extrusion-opacity': 0.7,
+      'fill-extrusion-opacity': 0.8,
     };
-    // paint = {
-      // 'fill-color': '#ff0000'
-    // };
   }
 
   this.mapboxMap_.addLayer({
