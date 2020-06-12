@@ -50,7 +50,7 @@ DiseaseMap.formatFeature = function(feature) {
     'coordinates': featureCoords,
   };
   if (threeDMode) {
-    feature['properties']['height'] = 10 * feature['properties']['total'];
+    feature['properties']['height'] = 10 * Math.sqrt(100000 * feature['properties']['total']);
   }
   return feature;
 };
@@ -159,7 +159,7 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
     paint = {
       // 'fill-extrusion-base': 0,
       'fill-extrusion-height': ['get', 'height'],
-      'fill-extrusion-color': '#ff0000',
+      'fill-extrusion-color': circleColor,
       // 'fill-extrusion-opacity': 0.7,
     };
     // paint = {
