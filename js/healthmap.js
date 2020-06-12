@@ -350,17 +350,24 @@ function completenessInit() {
       container.innerHTML = '';
       let list = document.createElement('table');
       list.innerHTML = '<tr><th>Country</th><th>Completion</th><th>"Line list" vs JHU aggregate</th></tr>';
+      let totalIndividual = 0;
+      let totalAggregate = 0;
       for (let i = 0; i < comparisons.length; i++) {
         const code = comparisons[i][0];
         const name = countries[code].getName();
         const individual = comparisons[i][1];
         const aggregate = comparisons[i][2];
+        totalIndividual += individual;
+        totalAggregate += aggregate;
         const percentage = (100 * individual / aggregate).toFixed(ratioPrecision);
         let row = document.createElement('tr');
         row.innerHTML = '<td>' + name + '</td><td><b>' + percentage + '%</b>' +
               '</td><td>' + individual + ' vs ' + aggregate + '</td>';
         list.appendChild(row);
       }
+      const globalPercentage = (100 * totalIndividual / totalAggregate).
+          toFixed(ratioPrecision);
+      container.innerHTML = '<h2>Global completeness: ' + globalPercentage + '%</h2>';
       container.appendChild(list);
     });
   });
