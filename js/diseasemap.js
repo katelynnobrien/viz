@@ -103,9 +103,7 @@ DiseaseMap.prototype.init = function(callback) {
     });
     self.mapboxMap_.addSource('test', {
       'type': 'geojson',
-      'data': {
-            'type': 'FeatureCollection',
-            'features': [{
+      'data': DiseaseMap.formatFeatureSet([{
             'type': 'Feature',
             'geometry': {
               'type': 'Polygon',
@@ -122,9 +120,8 @@ DiseaseMap.prototype.init = function(callback) {
             'properties': {
               'height': 100000,
             }
-          }]
+          }]),
           }
-        }
     );
     let circleColorForTotals = ['step', ['get', 'total']];
     // Don't use the last color here (for new cases).
@@ -166,8 +163,8 @@ DiseaseMap.prototype.addPopup = function(popup) {
 
 
 DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) {
-  // const type = threeDMode ? 'fill-extrusion' : 'circle';
-  const type = threeDMode ? 'fill' : 'circle';
+  const type = threeDMode ? 'fill-extrusion' : 'circle';
+  // const type = threeDMode ? 'fill' : 'circle';
   let paint = {
     'circle-radius': [
       'case', ['<', 0, ['number', ['get', featureProperty]]],
@@ -177,15 +174,15 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
     'circle-opacity': 0.6,
   };
   if (threeDMode) {
-    // paint = {
-      // 'fill-extrusion-base': 0,
-      // 'fill-extrusion-height': ['get', 'height'],
-      // 'fill-extrusion-color': '#ff0000',
-      // 'fill-extrusion-opacity': 0.7,
-    // };
     paint = {
-      'fill-color': '#ff0000'
+      // 'fill-extrusion-base': 0,
+      'fill-extrusion-height': ['get', 'height'],
+      'fill-extrusion-color': '#ff0000',
+      // 'fill-extrusion-opacity': 0.7,
     };
+    // paint = {
+      // 'fill-color': '#ff0000'
+    // };
   }
 
   this.mapboxMap_.addLayer({
