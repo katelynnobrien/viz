@@ -49,8 +49,8 @@ DiseaseMap.formatFeature = function(feature) {
     'type': featureType,
     'coordinates': featureCoords,
   };
-  if (threeDMode && !!feature['properties']['height']) {
-    console.log(feature);
+  if (threeDMode) {
+    feature['properties']['height'] = 100000;
   }
   return feature;
 };
@@ -179,7 +179,7 @@ DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) 
   this.mapboxMap_.addLayer({
     'id': id,
     'type': type,
-    'source': threeDMode ? 'test' : 'counts',
+    'source': 'counts',
     'paint': paint
   });
 };
