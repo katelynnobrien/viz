@@ -104,6 +104,8 @@ DiseaseMap.prototype.init = function(callback) {
     self.mapboxMap_.addSource('test', {
       'type': 'geojson',
       'data': {
+            'type': 'FeatureCollection',
+            'features': [{
             'type': 'Feature',
             'geometry': {
               'type': 'Polygon',
@@ -120,6 +122,7 @@ DiseaseMap.prototype.init = function(callback) {
             'properties': {
               'height': 100000,
             }
+          }]
           }
         }
     );
