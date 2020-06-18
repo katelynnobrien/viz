@@ -7,6 +7,7 @@ let DiseaseMap = function() {
 
 DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
 
+DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.4;
 
 /**
  * Takes an array of features, and bundles them in a way that the map API
@@ -29,8 +30,28 @@ DiseaseMap.formatFeature = function(feature) {
     feature['properties']['new'] = 0;
   }
   let coords = feature['properties']['geoid'].split('|');
+  const featureType = threeDMode ? 'Polygon' : 'Point';
+  const lat = parseFloat(coords[0]);
+  const lng = parseFloat(coords[1]);
   // Flip latitude and longitude.
-  feature['geometry'] = {'type': 'Point', 'coordinates': [coords[1], coords[0]]};
+  let featureCoords = [lng, lat];
+  if (threeDMode) {
+    const half = DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG / 2;
+    featureCoords = [[
+      [lng + half, lat + half],
+      [lng - half, lat + half],
+      [lng - half, lat - half],
+      [lng + half, lat - half],
+      [lng + half, lat + half],
+    ]];
+  }
+  feature['geometry'] = {
+    'type': featureType,
+    'coordinates': featureCoords,
+  };
+  if (threeDMode) {
+    feature['properties']['height'] = 10 * Math.sqrt(100000 * feature['properties']['total']);
+  }
   return feature;
 };
 
@@ -83,6 +104,7 @@ DiseaseMap.prototype.init = function(callback) {
       'type': 'geojson',
       'data': DiseaseMap.formatFeatureSet([])
     });
+
     let circleColorForTotals = ['step', ['get', 'total']];
     // Don't use the last color here (for new cases).
     for (let i = 0; i < COLOR_MAP.length - 1; i++) {
@@ -94,7 +116,7 @@ DiseaseMap.prototype.init = function(callback) {
     }
 
     self.addLayer(map, 'totals', 'total', circleColorForTotals);
-    self.addLayer(map, 'daily', 'new', 'cornflowerblue');
+    //self.addLayer(map, 'daily', 'new', 'cornflowerblue');
 
     // If we're not showing any data yet, let's fix that.
     self.showDataAtLatestDate();
@@ -123,14 +145,23 @@ DiseaseMap.prototype.addPopup = function(popup) {
 
 
 DiseaseMap.prototype.addLayer = function(map, id, featureProperty, circleColor) {
-  const type = 'circle';
-  const paint = {
+  const type = threeDMode ? 'fill-extrusion' : 'circle';
+  // const type = threeDMode ? 'fill' : 'circle';
+  let paint = {
     'circle-radius': [
       'case', ['<', 0, ['number', ['get', featureProperty]]],
       ['*', ['log10', ['sqrt', ['get', featureProperty]]], 5],
       0],
     'circle-color': circleColor,
     'circle-opacity': 0.6,
+  };
+  if (threeDMode) {
+    paint = {
+      // 'fill-extrusion-base': 0,
+      'fill-extrusion-height': ['get', 'height'],
+      'fill-extrusion-color': circleColor,
+      'fill-extrusion-opacity': 0.8,
+    };
   }
 
   this.mapboxMap_.addLayer({
