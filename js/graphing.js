@@ -86,7 +86,6 @@ Graphing.makeCasesGraph = function(
     curve['borderColor'] =
         Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
     let label = '';
-    debugger;
     if (singleCurve) {
       // For the time being, a graph with a single curve means we're showing
       // total cases, and the rest of the info is above the graph.

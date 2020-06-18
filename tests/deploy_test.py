@@ -5,6 +5,7 @@ import sys
 sys.path.append("scripts")
 from deploy import deploy
 
+JAVASCRIPT_BUNDLE = "js/bundle.js"
 TEST_TARGET = "test_deployment"
 
 class DeployTest(base_test.BaseTest):
@@ -40,8 +41,10 @@ class DeployTest(base_test.BaseTest):
             "The index page needs to make an unobfuscated call "
             "to 'fetchAboutPage'")
 
-        self.check(self.target_file_exists("js/bundle.js"),
+        self.check(self.target_file_exists(JAVASCRIPT_BUNDLE),
                    "Javascript should get compiled as part of deployment.")
+        self.check(not self.target_file_contains(JAVASCRIPT_BUNDLE, "debugger"),
+                   "Compiled JS should not contain 'debugger' statements.")
         self.check(not self.target_file_exists("js/healthmap.js"),
                    "Original Javascript files shouldn't be copied to "
                    "the target.")
