@@ -75,6 +75,8 @@ Graphing.makeCasesGraph = function(
 
   let dataToPlot = [];
   let i = 0;
+  // We have one key for dates, and one for geoids.
+  const singleCurve = Object.keys(data).length == 3;
   for (let geoid in data) {
     if (geoid == 'dates' || geoid == 'geoids') {
       continue;
@@ -83,10 +85,21 @@ Graphing.makeCasesGraph = function(
     curve['data'] = data[geoid];
     curve['borderColor'] =
         Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
-    const info = locationInfo[geoid].split(',');
-    let label = info[1];
-    if (!!info[0]) {
-      label = info[0] + ', ' + label;
+    let label = '';
+    debugger;
+    if (singleCurve) {
+      // For the time being, a graph with a single curve means we're showing
+      // total cases, and the rest of the info is above the graph.
+      label = 'Total cases';
+    } else {
+      // If we're showing multiple curves, show the city and region, but assume
+      // the country is shown elsewhere.
+      let info = locationInfo[geoid].split('|');
+      // Remove the country.
+      info = info.slice(0, 2);
+      // Remove empty strings.
+      info = info.filter(function (el) { return el != ''; });
+      label = info.join(', ');
     }
     curve['label'] = label;
     dataToPlot.push(curve);
