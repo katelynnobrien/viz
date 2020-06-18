@@ -48,6 +48,28 @@ Graphing.isoDateToUnixTime = function(isoDate) {
 };
 
 
+Graphing.average = function(arr) {
+  return arr.reduce((a, b) => (a + b)) / arr.length;
+}
+
+/**
+ * Applies a sliding window of the given length on the given data. The window is
+ * applied towards the past, meaning that the result of a given data point only
+ * depends on past data. This also means that the first [windowSize - 1] data
+ * points have to be discarded.
+ */
+Graphing.applySlidingWindow = function(data, windowSize) {
+  let averagedData = [];
+  let sliding = data.slice(0, windowSize);
+  for (let i = windowSize; i < data.length; i++) {
+    averagedData.push(Math.floor(Graphing.average(sliding)));
+    sliding.shift();
+    sliding.push(data[i]);
+  }
+  return averagedData;
+}
+
+
 /**
  * Takes a data object as returned by
  * |DataProvider.convertGeoJsonFeaturesToGraphData|.
@@ -56,6 +78,8 @@ Graphing.isoDateToUnixTime = function(isoDate) {
 Graphing.makeCasesGraph = function(
       data, totalWidth, totalHeight, mini) {
 
+  const slidingWindowSize = 7;
+  const singleCurve = Object.keys(data).length == 3;
   const container = document.createElement('div');
   container.setAttribute('id', 'chart');
   container.innerHTML = '';
@@ -73,16 +97,20 @@ Graphing.makeCasesGraph = function(
     labels.push(Graphing.isoDateToUnixTime(date));
   }
 
+  // TODO: Right now we assume we want to apply a sliding window average
+  // when there is more than one curve. These two things should be independent.
+  if (!singleCurve) {
+    labels = labels.slice(slidingWindowSize);
+  }
+
   let dataToPlot = [];
   let i = 0;
   // We have one key for dates, and one for geoids.
-  const singleCurve = Object.keys(data).length == 3;
   for (let geoid in data) {
     if (geoid == 'dates' || geoid == 'geoids') {
       continue;
     }
     let curve = {};
-    curve['data'] = data[geoid];
     curve['borderColor'] =
         Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
     let label = '';
@@ -90,6 +118,7 @@ Graphing.makeCasesGraph = function(
       // For the time being, a graph with a single curve means we're showing
       // total cases, and the rest of the info is above the graph.
       label = 'Total cases';
+      curve['data'] = data[geoid];
     } else {
       // If we're showing multiple curves, show the city and region, but assume
       // the country is shown elsewhere.
@@ -99,6 +128,7 @@ Graphing.makeCasesGraph = function(
       // Remove empty strings.
       info = info.filter(function (el) { return el != ''; });
       label = info.join(', ');
+      curve['data'] = Graphing.applySlidingWindow(data[geoid], slidingWindowSize);
     }
     curve['label'] = label;
     dataToPlot.push(curve);
