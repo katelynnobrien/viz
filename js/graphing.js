@@ -17,6 +17,10 @@ Graphing.CHART_CONFIG = {
       'display': false,
     },
     'tooltips': {
+      'filter': function (tooltipItem, data) {
+        // Don't clutter the tooltip with 0 values.
+        return tooltipItem['value'] != 0;
+      },
       'mode': 'index',
       'intersect': false,
       'position': 'nearest',
@@ -88,8 +92,7 @@ Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
   canvas.setAttribute('height', totalHeight + 'px');
   container.appendChild(canvas);
   let ctx = canvas.getContext('2d');
-  // Deep copy.
-  let cfg = JSON.parse(JSON.stringify(Graphing.CHART_CONFIG));
+  let cfg = Graphing.CHART_CONFIG;
 
   let labels = [];
   for (let i = 0; i < data['dates'].length; i++) {
@@ -111,8 +114,8 @@ Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
       continue;
     }
     let curve = {};
-    curve['borderColor'] =
-        Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
+    const color = Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
+    curve['borderColor'] = color;
     let label = '';
     if (singleCurve) {
       // For the time being, a graph with a single curve means we're showing
