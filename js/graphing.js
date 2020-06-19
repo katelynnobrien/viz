@@ -17,8 +17,13 @@ Graphing.CHART_CONFIG = {
       'display': false,
     },
     'tooltips': {
+      'filter': function (tooltipItem, data) {
+        // Don't clutter the tooltip with 0 values.
+        return tooltipItem['value'] != 0;
+      },
       'mode': 'index',
       'intersect': false,
+      'position': 'nearest',
     },
     'hover': {
       'mode': 'index',
@@ -48,24 +53,46 @@ Graphing.isoDateToUnixTime = function(isoDate) {
 };
 
 
+Graphing.average = function(arr) {
+  return arr.reduce((a, b) => (a + b)) / arr.length;
+}
+
+/**
+ * Applies a sliding window of the given length on the given data. The window is
+ * applied towards the past, meaning that the result of a given data point only
+ * depends on past data. This also means that the first [windowSize - 1] data
+ * points have to be discarded.
+ */
+Graphing.applySlidingWindow = function(data, windowSize) {
+  let averagedData = [];
+  let sliding = data.slice(0, windowSize);
+  for (let i = windowSize; i < data.length; i++) {
+    averagedData.push(Math.floor(Graphing.average(sliding)));
+    sliding.shift();
+    sliding.push(data[i]);
+  }
+  return averagedData;
+}
+
+
 /**
  * Takes a data object as returned by
  * |DataProvider.convertGeoJsonFeaturesToGraphData|.
  * Returns a DOM element with the requested graph.
  */
-Graphing.makeCasesGraph = function(
-      data, totalWidth, totalHeight, mini) {
+Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
 
+  const slidingWindowSize = 7;
+  const singleCurve = Object.keys(data).length == 3;
   const container = document.createElement('div');
   container.setAttribute('id', 'chart');
   container.innerHTML = '';
-  let chart = document.createElement('canvas');
-  chart.setAttribute('width', totalWidth + 'px');
-  chart.setAttribute('height', totalHeight + 'px');
-  container.appendChild(chart);
-  let ctx = chart.getContext('2d');
-  // Deep copy.
-  let cfg = JSON.parse(JSON.stringify(Graphing.CHART_CONFIG));
+  let canvas = document.createElement('canvas');
+  canvas.setAttribute('width', totalWidth + 'px');
+  canvas.setAttribute('height', totalHeight + 'px');
+  container.appendChild(canvas);
+  let ctx = canvas.getContext('2d');
+  let cfg = Graphing.CHART_CONFIG;
 
   let labels = [];
   for (let i = 0; i < data['dates'].length; i++) {
@@ -73,23 +100,28 @@ Graphing.makeCasesGraph = function(
     labels.push(Graphing.isoDateToUnixTime(date));
   }
 
+  // TODO: Right now we assume we want to apply a sliding window average
+  // when there is more than one curve. These two things should be independent.
+  if (!singleCurve) {
+    labels = labels.slice(slidingWindowSize);
+  }
+
   let dataToPlot = [];
   let i = 0;
   // We have one key for dates, and one for geoids.
-  const singleCurve = Object.keys(data).length == 3;
   for (let geoid in data) {
     if (geoid == 'dates' || geoid == 'geoids') {
       continue;
     }
     let curve = {};
-    curve['data'] = data[geoid];
-    curve['borderColor'] =
-        Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
+    const color = Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
+    curve['borderColor'] = color;
     let label = '';
     if (singleCurve) {
       // For the time being, a graph with a single curve means we're showing
       // total cases, and the rest of the info is above the graph.
       label = 'Total cases';
+      curve['data'] = data[geoid];
     } else {
       // If we're showing multiple curves, show the city and region, but assume
       // the country is shown elsewhere.
@@ -99,6 +131,7 @@ Graphing.makeCasesGraph = function(
       // Remove empty strings.
       info = info.filter(function (el) { return el != ''; });
       label = info.join(', ');
+      curve['data'] = Graphing.applySlidingWindow(data[geoid], slidingWindowSize);
     }
     curve['label'] = label;
     dataToPlot.push(curve);

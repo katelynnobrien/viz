@@ -185,7 +185,7 @@ function showPopupForEvent(e) {
 
   content.appendChild(Graphing.makeCasesGraph(
       DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
-      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX, true /* mini */));
+      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -305,6 +305,10 @@ function countryInit() {
   dataProvider.loadCountryData(showCountryPage);
 }
 
+function rankInit() {
+  console.log('rank');
+}
+
 function completenessInit() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
@@ -406,8 +410,10 @@ function showCountryPage(data) {
   }
 
   let chartsEl = document.getElementById('charts');
-  chartsEl.appendChild(Graphing.makeCasesGraph(
-      o, chartsEl.clientWidth, chartsEl.clientHeight, false /* mini */));
+
+  const newCasesChart = Graphing.makeCasesGraph(
+      o, chartsEl.clientWidth, chartsEl.clientHeight);
+  chartsEl.appendChild(newCasesChart);
 }
 
 // Exports
