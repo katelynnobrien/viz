@@ -291,7 +291,7 @@ DataProvider.prototype.fetchJhuData = function() {
       });
       for (let i = 0; i < obj.length; ++i) {
         let location = obj[i];
-        if (!location || !location['attributes'] || !location['centroid']) {
+        if (!location || !location['attributes'] || !location['attributes']['code']) {
           // We can't do much with this location.
           continue;
         }
@@ -301,9 +301,7 @@ DataProvider.prototype.fetchJhuData = function() {
           continue;
         }
         const name = country.getName();
-        let lon = location['centroid']['x'] || 0;
-        let lat = location['centroid']['y'] || 0;
-        const geoid = '' + lat + '|' + lon;
+        const geoid = country.getCentroid().join('|');
         // The total count comes down as a formatted string.
         let cumConf = parseInt(
             location['attributes']['cum_conf'].replace(/,/g, ''),
