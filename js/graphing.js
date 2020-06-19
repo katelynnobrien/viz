@@ -19,6 +19,7 @@ Graphing.CHART_CONFIG = {
     'tooltips': {
       'mode': 'index',
       'intersect': false,
+      'position': 'nearest',
     },
     'hover': {
       'mode': 'index',
@@ -75,19 +76,18 @@ Graphing.applySlidingWindow = function(data, windowSize) {
  * |DataProvider.convertGeoJsonFeaturesToGraphData|.
  * Returns a DOM element with the requested graph.
  */
-Graphing.makeCasesGraph = function(
-      data, totalWidth, totalHeight, mini) {
+Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
 
   const slidingWindowSize = 7;
   const singleCurve = Object.keys(data).length == 3;
   const container = document.createElement('div');
   container.setAttribute('id', 'chart');
   container.innerHTML = '';
-  let chart = document.createElement('canvas');
-  chart.setAttribute('width', totalWidth + 'px');
-  chart.setAttribute('height', totalHeight + 'px');
-  container.appendChild(chart);
-  let ctx = chart.getContext('2d');
+  let canvas = document.createElement('canvas');
+  canvas.setAttribute('width', totalWidth + 'px');
+  canvas.setAttribute('height', totalHeight + 'px');
+  container.appendChild(canvas);
+  let ctx = canvas.getContext('2d');
   // Deep copy.
   let cfg = JSON.parse(JSON.stringify(Graphing.CHART_CONFIG));
 

@@ -305,6 +305,10 @@ function countryInit() {
   dataProvider.loadCountryData(showCountryPage);
 }
 
+function rankInit() {
+  console.log('rank');
+}
+
 function completenessInit() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
@@ -406,8 +410,10 @@ function showCountryPage(data) {
   }
 
   let chartsEl = document.getElementById('charts');
-  chartsEl.appendChild(Graphing.makeCasesGraph(
-      o, chartsEl.clientWidth, chartsEl.clientHeight, false /* mini */));
+
+  const newCasesChart = Graphing.makeCasesGraph(
+      o, chartsEl.clientWidth, chartsEl.clientHeight);
+  chartsEl.appendChild(newCasesChart);
 }
 
 // Exports
