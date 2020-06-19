@@ -185,7 +185,7 @@ function showPopupForEvent(e) {
 
   content.appendChild(Graphing.makeCasesGraph(
       DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
-      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX, true /* mini */));
+      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
