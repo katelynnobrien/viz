@@ -174,6 +174,7 @@ DataProvider.prototype.fetchCountryNames = function() {
 
 /** Loads the latest case counts from the scraper. */
 DataProvider.prototype.fetchLatestCounts = function() {
+  const timestamp = (new Date()).getTime();
   return fetch(this.baseUrl_ + 'latestCounts.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
@@ -210,6 +211,7 @@ DataProvider.prototype.fetchLatestDailySlice = function(callback) {
  * fetches the latest slice first.
  */
 DataProvider.prototype.fetchDailySlice = function(sliceFileName, isNewest) {
+  const timestamp = (new Date()).getTime();
   let self = this;
   let url = this.baseUrl_ + 'd/' + sliceFileName;
   // Don't cache the most recent daily slice. Cache all others.
@@ -277,6 +279,7 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
 
 
 DataProvider.prototype.fetchJhuData = function() {
+  const timestamp = (new Date()).getTime();
   let self = this;
   return fetch(this.baseUrl_ + 'jhu.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })

@@ -2,6 +2,7 @@
 const ANIMATION_FRAME_DURATION_MS = 300;
 const POPUP_CASE_GRAPH_WIDTH_PX = 400;
 const POPUP_CASE_GRAPH_HEIGHT_PX = 300;
+const LIVE_UPDATE_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 const COLOR_MAP = [
   ['#67009e', '< 10', 10],
   ['#921694', '11–100', 100],
@@ -10,9 +11,6 @@ const COLOR_MAP = [
   ['#edf91c', '> 2000'],
   ['cornflowerblue', 'New'],
 ];
-
-// Runtime constants
-const timestamp = (new Date()).getTime();
 
 // Globals
 let dataProvider;
@@ -297,6 +295,20 @@ function init() {
   document.getElementById('spread').
       addEventListener('click', toggleMapAnimation);
   document.getElementById('playpause').setAttribute('src', 'img/play.svg');
+  window.setTimeout(updateData, LIVE_UPDATE_INTERVAL_MS);
+}
+
+function updateData() {
+  console.log('Updating data...');
+  dataProvider.fetchLatestCounts().then(function() {
+    console.log('Updated latest counts.');
+  });
+  dataProvider.fetchDataIndex().then(function() {
+    console.log('Updated data index.');
+  });
+
+  // Update the data again after another time interval.
+  window.setTimeout(updateData, LIVE_UPDATE_INTERVAL_MS);
 }
 
 function countryInit() {
