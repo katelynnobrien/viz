@@ -305,10 +305,7 @@ DataProvider.prototype.fetchJhuData = function() {
         }
         const name = country.getName();
         const geoid = country.getCentroid().join('|');
-        // The total count comes down as a formatted string.
-        let cumConf = parseInt(
-            location['attributes']['cum_conf'].replace(/,/g, ''),
-            10) || 0;
+        let cumConf = parseInt(location['attributes']['cum_conf'], 10) || 0;
         let legendGroup = 'default';
         self.latestDataPerCountry_[code] = [cumConf];
         if (!!countryList) {
