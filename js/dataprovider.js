@@ -20,13 +20,22 @@ let DataProvider = function(baseUrl) {
   this.cityFeaturesByDay_ = {};
 
   /**
-   * A map from country names to most recent data (case count, etc.).
+   * A map from country names to most recent data (case count, etc.), or
+   * null if this hasn't been calculated yet.
    * @private
    */
-  this.latestDataPerCountry_ = {};
+  this.latestDataPerCountry_ = null;
 
   /** @private */
   this.dataSliceFileNames_ = [];
+
+  /**
+    * An object whose keys are ISO-formatted dates, and values are mapping
+    * between country codes and aggregated data (total case count, deaths, etc.)
+    * @type {object}
+    * @private
+    */
+  this.aggregateData_;
 };
 
 /**
@@ -87,13 +96,37 @@ DataProvider.convertGeoJsonFeaturesToGraphData = function(datesToFeatures, prop)
   return o;
 }
 
+
+DataProvider.prototype.getLatestDateWithAggregateData = function() {
+  let dates = Object.keys(this.aggregateData_);
+  return dates.sort()[dates.length - 1];
+}
+
 DataProvider.prototype.getLatestDataPerCountry = function() {
+  if (!this.latestDataPerCountry_) {
+    this.latestDataPerCountry_ = {};
+    const latestAggregateData = this.getLatestAggregateData();
+    for (let i = 0; i < latestAggregateData.length; i++) {
+      const item = latestAggregateData[i];
+      this.latestDataPerCountry_[item['code']] = [item['cum_conf']];
+    }
+  }
   return this.latestDataPerCountry_;
 };
+
 
 DataProvider.prototype.getCountryFeaturesForDay = function(date) {
   return this.countryFeaturesByDay_[date];
 };
+
+
+DataProvider.prototype.getLatestAggregateData = function() {
+  return this.aggregateData_[this.getLatestDateWithAggregateData()];
+}
+
+DataProvider.prototype.getAggregateData = function() {
+  return this.aggregateData_;
+}
 
 DataProvider.prototype.fetchInitialData = function(callback) {
   const self = this;
@@ -281,112 +314,13 @@ DataProvider.prototype.processDailySlice = function(jsonData, isNewest) {
 DataProvider.prototype.fetchJhuData = function() {
   const timestamp = (new Date()).getTime();
   let self = this;
-  return fetch(this.baseUrl_ + 'jhu.json?nocache=' + timestamp)
+  return fetch(this.baseUrl_ + 'aggregate.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      // If the page we are on doesn't have the corresponding UI, we don't need
-      // to do anything else.
-      let countryList = document.getElementById('location-list');
-      let obj = jsonData['features'];
-      // Sort according to decreasing confirmed cases.
-      obj.sort(function(a, b) {
-        return b['attributes']['cum_conf'] - a['attributes']['cum_conf'];
-      });
-      for (let i = 0; i < obj.length; ++i) {
-        let location = obj[i];
-        if (!location || !location['attributes'] || !location['attributes']['code']) {
-          // We can't do much with this location.
-          continue;
-        }
-        const code = location['attributes']['code'];
-        const country = countries[code];
-        if (!country) {
-          continue;
-        }
-        const name = country.getName();
-        const geoid = country.getCentroid().join('|');
-        let cumConf = parseInt(location['attributes']['cum_conf'], 10) || 0;
-        let legendGroup = 'default';
-        self.latestDataPerCountry_[code] = [cumConf];
-        if (!!countryList) {
-          // No city or province, just the country code.
-          locationInfo[geoid] = '||' + code;
-          if (cumConf <= 10) {
-            legendGroup = '10';
-          } else if (cumConf <= 100) {
-            legendGroup = '100';
-          } else if (cumConf <= 500) {
-            legendGroup = '500';
-          } else if (cumConf <= 2000) {
-            legendGroup = '2000';
-          }
-
-          let item = document.createElement('li');
-          let button = document.createElement('button');
-          button.setAttribute('country', code);
-          button.onclick = flyToCountry;
-          button.innerHTML = '<span class="label">' + name + '</span>' +
-              '<span class="num legend-group-' + legendGroup +
-              '"></span>';
-          item.appendChild(button);
-          countryList.appendChild(item);
-        }
-      }
-      if (!!countryList) {
-        self.updateCountryListCounts();
-      }
+      console.log('Finished fetching aggregate data.');
+      self.aggregateData_ = jsonData;
     });
 }
-
-
-DataProvider.prototype.updateCountryListCounts = function() {
-  const list = document.getElementById('location-list');
-  let countSpans = list.getElementsByClassName('num');
-  for (let i = 0; i < countSpans.length; i++) {
-    let span = countSpans[i];
-    const code = span.parentNode.getAttribute('country');
-    const country = countries[code];
-    let countToShow = this.getLatestDataPerCountry()[code][0];
-    if (document.getElementById('percapita').checked) {
-      const population = country.getPopulation();
-      if (!!population) {
-        countToShow = '' + (100 * countToShow / country.getPopulation()).
-              toFixed(3) + '%';
-      } else {
-        countToShow = '?';
-      }
-    } else {
-      countToShow = countToShow.toLocaleString();
-    }
-    span.textContent = countToShow;
-  }
-  this.sortCountryList();
-};
-
-
-DataProvider.prototype.sortCountryList = function() {
-  const list = document.getElementById('location-list');
-  let items = list.children;
-  let itemsArray = [];
-  for (let i = 0; i < items.length; i++) {
-    itemsArray.push(items[i]);
-  }
-  itemsArray.sort(function(a, b) {
-    const str_a = a.getElementsByClassName(
-        'num')[0].textContent.replace(/,/g, '');
-    const str_b = b.getElementsByClassName(
-        'num')[0].textContent.replace(/,/g, '');
-    if (str_a == '?') { return 1; }
-    if (str_b == '?') { return -1;}
-    const count_a = parseFloat(str_a);
-    const count_b = parseFloat(str_b);
-    return count_a == count_b ? 0 : (count_a < count_b ? 1 : -1);
-  });
-
-  for (let i = 0; i < itemsArray.length; i++) {
-    list.appendChild(itemsArray[i]);
-  }
-};
 
 
 DataProvider.prototype.getCompletenessData = function(callback) {
