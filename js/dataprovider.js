@@ -32,7 +32,7 @@ let DataProvider = function(baseUrl) {
   /**
     * An object whose keys are ISO-formatted dates, and values are mapping
     * between country codes and aggregated data (total case count, deaths, etc.)
-    * @type {object}
+    * @type {Object}
     * @private
     */
   this.aggregateData_;
@@ -98,6 +98,9 @@ DataProvider.convertGeoJsonFeaturesToGraphData = function(datesToFeatures, prop)
 
 
 DataProvider.prototype.getLatestDateWithAggregateData = function() {
+  if (!this.aggregateData_) {
+    return null;
+  }
   let dates = Object.keys(this.aggregateData_);
   return dates.sort()[dates.length - 1];
 }

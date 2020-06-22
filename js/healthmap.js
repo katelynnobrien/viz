@@ -267,7 +267,7 @@ function init() {
   timeControl = document.getElementById('slider');
   document.getElementById('sidebar-tab').onclick = toggleSideBar;
   document.getElementById('percapita').addEventListener('change', function(e) {
-    dataProvider.updateCountryListCounts();
+    updateCountryListCounts();
   });
   toggleSideBar();
 
