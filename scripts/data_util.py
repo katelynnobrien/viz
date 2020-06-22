@@ -49,26 +49,6 @@ def country_code_from_name(name):
     print("WARNING: I don't know about country '" + name + "'")
 
 
-def build_case_count_table_from_line_list(in_data):
-    """
-    This takes an input data frame where each row represents a single
-    case, with a confirmation date and a geo ID, and returns a data
-    frame where each row represents a single date, columns are unique
-    geo IDs and cells are the sum of corresponding case counts.
-    """
-    unique_dates = in_data.date.unique()
-    unique_geoids = in_data.geoid.unique()
-    unique_geoids.sort()
-    out_data = pandas.DataFrame(columns=unique_geoids, index=unique_dates)
-
-    out_data.index.name = "date"
-    for date in out_data.index:
-        out_data.loc[date] = in_data[in_data.date == date].geoid.value_counts()
-    out_data = out_data.fillna(0)
-    out_data.reset_index(drop=False)
-    return out_data
-
-
 def make_country_pages():
     countries = get_all_countries()
     with open("country.html") as f:
@@ -93,34 +73,6 @@ def make_country_pages():
             i.close()
     # TODO: return False is anything bad happens.
     return True
-
-
-def compile_location_info(in_data, out_file,
-                          keys=["country", "province", "city"], quiet=False):
-
-    if not quiet:
-        print("Exporting location info...")
-    location_info = {}
-    for item in in_data:
-        geo_id = item['geoid']
-        if geo_id not in location_info:
-            name = str(item[keys[0]])
-            # 2-letter ISO code for the country
-            if name == "nan":
-                code = ""
-            else:
-                code = country_code_from_name(name)
-            location_info[geo_id] = [(str(item[key]) if str(item[key]) != "nan"
-                                      else "") for key in
-                                     [keys[2], keys[1]]] + [code]
-
-    output = []
-    for geoid in location_info:
-        output.append(geoid + ":" + ",".join(location_info[geoid]))
-    with open(out_file, "w") as f:
-        f.write("\n".join(output))
-        f.close()
-
 
 
 # Fetch country names and codes at module initialization time to avoid doing it

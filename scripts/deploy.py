@@ -2,7 +2,6 @@
 Makes it easy and painless to deploy the site and make all necessary changes
 so that it's immediately ready to serve in production.
 """
-import datetime
 import glob
 import os
 import shlex
