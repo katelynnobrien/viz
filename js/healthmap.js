@@ -28,6 +28,7 @@ let threeDMode = false;
 let initialFlyTo;
 
 let currentIsoDate;
+let currentDateIndex = 0;
 let animationIntervalId = 0;
 
 let atomicFeaturesByDay = {};
@@ -443,6 +444,7 @@ function showRankPage() {
   const latestDate = dataProvider.getLatestDateWithAggregateData();
   const maxWidth = Math.floor(container.clientWidth);
   let maxCases = 0;
+  dates = Object.keys(aggregates).sort();
 
   for (let date in aggregates) {
     for (let country in aggregates[date]) {
@@ -464,10 +466,22 @@ function showRankPage() {
     i++;
   }
 
-  showRankPageAtDate(latestDate, maxWidth, maxValue);
+  showRankPageAtCurrentDate(maxWidth, maxValue);
+  container.onwheel = function(e) {
+    onRankWheel(e, maxWidth, maxValue)
+  };
 }
 
-function showRankPageAtDate(date, maxWidth, maxValue) {
+function onRankWheel(e, maxWidth, maxValue) {
+  e.preventDefault();
+  const forward = e.deltaY > 0;
+  currentDateIndex += forward ? 1 : -1;
+  showRankPageAtCurrentDate(maxWidth, maxValue);
+}
+
+function showRankPageAtCurrentDate(maxWidth, maxValue) {
+  const date = dates[currentDateIndex];
+  document.getElementById('title').textContent = date;
   const data = dataProvider.getAggregateData()[date];
   const y_step = 33;
   let container = document.getElementById('data');
@@ -480,8 +494,6 @@ function showRankPageAtDate(date, maxWidth, maxValue) {
   bars = bars.sort(function(a, b) {
     const a_code = a.getAttribute('id');
     const b_code = b.getAttribute('id');
-    console.log(a_code + ' -- ' + b_code);
-    console.log('Comparing ' + o[a_code] + ' and ' + o[b_code]);
     const a_count = o[a_code] || 0;
     const b_count = o[b_code] || 0;
     return a_count < b_count ? 1 : -1;
@@ -492,7 +504,6 @@ function showRankPageAtDate(date, maxWidth, maxValue) {
     const code = b.getAttribute('id');
     if (!o[code]) {
       b.style.display = 'none';
-      console.log('NONE: ' + code);
       continue;
     }
     const case_count = o[code];
@@ -500,7 +511,7 @@ function showRankPageAtDate(date, maxWidth, maxValue) {
     b.style.top = y + 'px';
     b.style.width = Math.floor(
         maxWidth * Math.log(case_count) / maxValue);
-    y += 35;
+    y += 37;
   }
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
