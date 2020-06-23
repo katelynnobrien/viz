@@ -30,6 +30,7 @@ HTML_FILES = [
     "country.html",
     "index.html",
     "completeness/index.html",
+    "rank/index.html",
 ]
 
 # Returns True if everything we need is here, False otherwise.

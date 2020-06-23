@@ -40,6 +40,7 @@ let initialFlyTo;
 let currentIsoDate;
 let currentDateIndex = 0;
 let animationIntervalId = 0;
+let currentTouchY = -1;
 
 let atomicFeaturesByDay = {};
 
@@ -463,7 +464,7 @@ function showRankPage() {
       maxCases = Math.max(maxCases, aggregates[date][country]['cum_conf']);
     }
   }
-  const maxValue = Math.log(maxCases);
+  const maxValue = Math.log10(maxCases);
 
   let i = 0;
   for (let code in countries) {
@@ -473,7 +474,14 @@ function showRankPage() {
     el.classList.add('bar');
     el.style.backgroundColor = RANK_COLORS[i % RANK_COLORS.length];
     el.style.color = '#fff';
-    el.textContent = c.getName();
+    let startSpan = document.createElement('span');
+    startSpan.classList.add('start');
+    let endSpan = document.createElement('span');
+    endSpan.classList.add('end');
+    startSpan.textContent = c.getName();
+    startSpan.style.backgroundColor = RANK_COLORS[i % RANK_COLORS.length];
+    el.appendChild(endSpan);
+    el.appendChild(startSpan);
     container.appendChild(el);
     i++;
   }
@@ -482,17 +490,36 @@ function showRankPage() {
   container.onwheel = function(e) {
     onRankWheel(e, maxWidth, maxValue)
   };
+  container.ontouchmove = function(e) {
+    e.preventDefault();
+    onRankTouchMove(e['touches'][0].clientY - currentTouchY, maxWidth, maxValue)
+  };
+  container.ontouchstart = function(e) {
+    e.preventDefault();
+    currentTouchY = e['touches'][0].clientY;
+  }
+  container.ontouchend = function(e) {
+    e.preventDefault();
+    currentTouchY = -1;
+  }
+}
+
+function onRankTouchMove(delta, maxWidth, maxValue) {
+  const points_per_step = 100;
+  rankAdvance(delta > 0, Math.floor(Math.abs(delta / points_per_step)),
+              maxWidth, maxValue);
 }
 
 function onRankWheel(e, maxWidth, maxValue) {
   e.preventDefault();
-  const forward = e.deltaY > 0;
-  if ((forward && currentDateIndex >= dates.length - 1) ||
-      (!forward && currentDateIndex <= 0)) {
-    // We've reached a time boundary.
-    return;
-  }
-  currentDateIndex += forward ? 1 : -1;
+  rankAdvance(e.deltaY > 0, 1, maxWidth, maxValue);
+}
+
+function rankAdvance(forward, steps, maxWidth, maxValue) {
+  let newDateIndex = currentDateIndex + (forward ? steps : -steps);
+  newDateIndex = Math.max(newDateIndex, 0);
+  newDateIndex = Math.min(newDateIndex, dates.length -1);
+  currentDateIndex = newDateIndex;
   showRankPageAtCurrentDate(maxWidth, maxValue);
 }
 
@@ -524,10 +551,11 @@ function showRankPageAtCurrentDate(maxWidth, maxValue) {
       continue;
     }
     const case_count = o[code];
+    b.getElementsByClassName('end')[0].textContent = case_count.toLocaleString();
     b.style.display = 'block';
     b.style.top = y + 'px';
     b.style.width = Math.floor(
-        maxWidth * Math.log(case_count) / maxValue);
+        maxWidth * Math.log10(case_count) / maxValue);
     y += 37;
   }
   for (let i = 0; i < data.length; i++) {
