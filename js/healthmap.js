@@ -684,3 +684,4 @@ globalThis['filterList'] = filterList;
 globalThis['init'] = init;
 globalThis['countryInit'] = countryInit;
 globalThis['completenessInit'] = completenessInit;
+globalThis['rankInit'] = completenessInit;
