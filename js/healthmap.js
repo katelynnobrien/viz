@@ -475,6 +475,11 @@ function showRankPage() {
 function onRankWheel(e, maxWidth, maxValue) {
   e.preventDefault();
   const forward = e.deltaY > 0;
+  if ((forward && currentDateIndex >= dates.length - 1) ||
+      (!forward && currentDateIndex <= 0)) {
+    // We've reached a time boundary.
+    return;
+  }
   currentDateIndex += forward ? 1 : -1;
   showRankPageAtCurrentDate(maxWidth, maxValue);
 }
