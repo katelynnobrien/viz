@@ -23,6 +23,7 @@ INCLUDE_LIST = [
     "completeness/index.html",
     "css/styles.css",
     "img/*",
+    "rank/index.html",
 ]
 
 HTML_FILES = [
