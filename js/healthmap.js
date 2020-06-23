@@ -451,7 +451,6 @@ function showRankPage() {
   }
   const maxValue = Math.log(maxCases);
 
-  // console.log(countries);
   let i = 0;
   for (let code in countries) {
     const c = countries[code];
@@ -472,12 +471,9 @@ function showRankPageAtDate(date, maxWidth, maxValue) {
   const data = dataProvider.getAggregateData()[date];
   const y_step = 33;
   let container = document.getElementById('data');
-  // console.log('rank ' + date);
-  // console.log(data);
   let o = {};
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
-    // console.log(data);
     o[item['code']] = item['cum_conf'];
   }
   let bars = [...document.getElementsByClassName('bar')];
