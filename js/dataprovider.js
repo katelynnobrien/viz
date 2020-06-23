@@ -320,7 +320,6 @@ DataProvider.prototype.fetchJhuData = function() {
   return fetch(this.baseUrl_ + 'aggregate.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      console.log('Finished fetching aggregate data.');
       self.aggregateData_ = jsonData;
     });
 }

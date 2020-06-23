@@ -167,7 +167,8 @@ function showPopupForEvent(e) {
   totalCaseCount = props['total'];
 
   let content = document.createElement('div');
-  content.innerHTML = '<h3 class="popup-header"><span>' + locationSpan.join(', ') + '</span></h3>';
+  content.innerHTML = '<h3 class="popup-header"><span>' +
+        locationSpan.join(', ') + '</span></h3>';
 
   let relevantFeaturesByDay = {};
   for (let i = 0; i < dates.length; i++) {
@@ -182,7 +183,8 @@ function showPopupForEvent(e) {
   }
 
   content.appendChild(Graphing.makeCasesGraph(
-      DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
+      DataProvider.convertGeoJsonFeaturesToGraphData(
+          relevantFeaturesByDay, 'total'),
       POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
 
   // Ensure that if the map is zoomed out such that multiple
@@ -233,7 +235,8 @@ function onAllDataFetched() {
 function toggleSideBar() {
   let pageWrapper = document.getElementById('page-wrapper');
   const previouslyHidden = pageWrapper.classList.contains('sidebar-hidden');
-  document.getElementById('sidebar-tab-icon').textContent = previouslyHidden ? '◀' : '▶';
+  document.getElementById('sidebar-tab-icon').textContent =
+        previouslyHidden ? '◀' : '▶';
   pageWrapper.classList.toggle('sidebar-hidden');
 }
 
