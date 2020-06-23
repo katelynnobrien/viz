@@ -5,8 +5,28 @@
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="../css/styles.css?c" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      overflow: hidden;
+    }
     h1 {
       border: none;
+      text-align: center;
+    }
+    #data {
+      height: 100%;
+      margin: 25px auto;
+      position: relative;
+      width: 90%;
+    }
+    .bar {
+      height: 30px;
+      overflow: hidden;
+      padding: 3px 10px;
+      position: absolute;
+      word-wrap: unset;
     }
   </style>
 </head>
@@ -15,6 +35,19 @@
 <h1>Rank</h1>
 
 <div id="data">Loading...</div>
+
+<script>
+const RANK_COLORS = [
+  '#b600ff',  // purple
+  '#0c1fb4',  // dark blue
+  '#0060ff',  // blue
+  '#00dd8e',  // teal
+  '#00b31a',  // green
+  '#bb9900',  // yellow
+  '#e37300',  // orange
+  '#e90000',  // red
+];
+</script>
 
 <!-- js -->
 <script src="/js/country.js"></script>

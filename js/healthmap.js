@@ -429,7 +429,86 @@ function countryInit() {
 }
 
 function rankInit() {
-  console.log('rank');
+  dataProvider = new DataProvider(
+      'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
+  dataProvider.fetchCountryNames().
+      then(dataProvider.fetchJhuData.bind(dataProvider)).
+      then(showRankPage);
+}
+
+function showRankPage() {
+  let container = document.getElementById('data');
+  container.innerHTML = '';
+  const aggregates = dataProvider.getAggregateData();
+  const latestDate = dataProvider.getLatestDateWithAggregateData();
+  const maxWidth = Math.floor(container.clientWidth);
+  let maxCases = 0;
+
+  for (let date in aggregates) {
+    for (let country in aggregates[date]) {
+      maxCases = Math.max(maxCases, aggregates[date][country]['cum_conf']);
+    }
+  }
+  const maxValue = Math.log(maxCases);
+
+  // console.log(countries);
+  let i = 0;
+  for (let code in countries) {
+    const c = countries[code];
+    let el = document.createElement('div');
+    el.setAttribute('id', code);
+    el.classList.add('bar');
+    el.style.backgroundColor = RANK_COLORS[i % RANK_COLORS.length];
+    el.style.color = '#fff';
+    el.textContent = c.getName();
+    container.appendChild(el);
+    i++;
+  }
+
+  showRankPageAtDate(latestDate, maxWidth, maxValue);
+}
+
+function showRankPageAtDate(date, maxWidth, maxValue) {
+  const data = dataProvider.getAggregateData()[date];
+  const y_step = 33;
+  let container = document.getElementById('data');
+  // console.log('rank ' + date);
+  // console.log(data);
+  let o = {};
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+    // console.log(data);
+    o[item['code']] = item['cum_conf'];
+  }
+  let bars = [...document.getElementsByClassName('bar')];
+  bars = bars.sort(function(a, b) {
+    const a_code = a.getAttribute('id');
+    const b_code = b.getAttribute('id');
+    console.log(a_code + ' -- ' + b_code);
+    console.log('Comparing ' + o[a_code] + ' and ' + o[b_code]);
+    const a_count = o[a_code] || 0;
+    const b_count = o[b_code] || 0;
+    return a_count < b_count ? 1 : -1;
+  });
+  let y = 0;
+  for (let i = 0; i < bars.length; i++) {
+    let b = bars[i];
+    const code = b.getAttribute('id');
+    if (!o[code]) {
+      b.style.display = 'none';
+      console.log('NONE: ' + code);
+      continue;
+    }
+    const case_count = o[code];
+    b.style.display = 'block';
+    b.style.top = y + 'px';
+    b.style.width = Math.floor(
+        maxWidth * Math.log(case_count) / maxValue);
+    y += 35;
+  }
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+  }
 }
 
 function completenessInit() {
