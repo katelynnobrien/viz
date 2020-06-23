@@ -11,6 +11,16 @@ const COLOR_MAP = [
   ['#edf91c', '> 2000'],
   ['cornflowerblue', 'New'],
 ];
+const RANK_COLORS = [
+  '#b600ff',  // purple
+  '#0c1fb4',  // dark blue
+  '#0060ff',  // blue
+  '#00dd8e',  // teal
+  '#00b31a',  // green
+  '#bb9900',  // yellow
+  '#e37300',  // orange
+  '#e90000',  // red
+];
 
 // Globals
 let dataProvider;
@@ -183,10 +193,12 @@ function showPopupForEvent(e) {
     }
   }
 
-  content.appendChild(Graphing.makeCasesGraph(
+  let container = document.createElement('div');
+  container.classList.add('chart');
+  Graphing.makeCasesGraph(
       DataProvider.convertGeoJsonFeaturesToGraphData(
-          relevantFeaturesByDay, 'total'), 'total', false /* average */,
-      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
+          relevantFeaturesByDay, 'total'), false /* average */, container);
+  content.appendChild(container);
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
