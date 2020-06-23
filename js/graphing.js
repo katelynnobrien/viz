@@ -80,16 +80,13 @@ Graphing.applySlidingWindow = function(data, windowSize) {
  * |DataProvider.convertGeoJsonFeaturesToGraphData|.
  * Returns a DOM element with the requested graph.
  */
-Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
+Graphing.makeCasesGraph = function(data, useAverageWindow, container) {
 
   const slidingWindowSize = 7;
-  const singleCurve = Object.keys(data).length == 3;
-  const container = document.createElement('div');
-  container.setAttribute('id', 'chart');
-  container.innerHTML = '';
+  const singleCurve = Object.keys(data).length == 2;
   let canvas = document.createElement('canvas');
-  canvas.setAttribute('width', totalWidth + 'px');
-  canvas.setAttribute('height', totalHeight + 'px');
+  canvas.setAttribute('width', container.clientWidth + 'px');
+  canvas.setAttribute('height', container.clientHeight + 'px');
   container.appendChild(canvas);
   let ctx = canvas.getContext('2d');
   let cfg = Graphing.CHART_CONFIG;
@@ -102,7 +99,7 @@ Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
 
   // TODO: Right now we assume we want to apply a sliding window average
   // when there is more than one curve. These two things should be independent.
-  if (!singleCurve) {
+  if (useAverageWindow) {
     labels = labels.slice(slidingWindowSize);
   }
 
@@ -110,29 +107,29 @@ Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
   let i = 0;
   // We have one key for dates, and one for geoids.
   for (let geoid in data) {
-    if (geoid == 'dates' || geoid == 'geoids') {
+    if (geoid == 'dates') {
       continue;
     }
     let curve = {};
     const color = Graphing.CURVE_COLORS[i % Graphing.CURVE_COLORS.length];
     curve['borderColor'] = color;
     let label = '';
-    if (singleCurve) {
-      // For the time being, a graph with a single curve means we're showing
-      // total cases, and the rest of the info is above the graph.
-      label = 'Total cases';
-      curve['data'] = data[geoid];
-    } else {
-      // If we're showing multiple curves, show the city and region, but assume
-      // the country is shown elsewhere.
-      let info = locationInfo[geoid].split('|');
-      // Remove the country.
-      info = info.slice(0, 2);
+    // If we're showing multiple curves, show the city and region, but assume
+    // the country is shown elsewhere.
+    let info = locationInfo[geoid];
+    if (!!info) {
+      info = info.split('|');
+      // Use the country name.
+      info[2] = countries[info[2]].getName();
       // Remove empty strings.
       info = info.filter(function (el) { return el != ''; });
       label = info.join(', ');
-      curve['data'] = Graphing.applySlidingWindow(data[geoid], slidingWindowSize);
+    } else {
+      label = 'Total cases';
     }
+    curve['data'] = useAverageWindow ?
+        Graphing.applySlidingWindow(data[geoid], slidingWindowSize) :
+        data[geoid];
     curve['label'] = label;
     dataToPlot.push(curve);
     i += 1;
@@ -144,5 +141,4 @@ Graphing.makeCasesGraph = function(data, totalWidth, totalHeight) {
   };
 
   new Chart(ctx, cfg);
-  return container;
 };

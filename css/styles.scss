@@ -438,7 +438,7 @@ div.mapboxgl-popup-content {
   left: $sidebar-margin-end;
 }
 
-#page-wrapper #chart {
+#page-wrapper .chart {
   height: 300px;
   width: 400px;
 }
@@ -462,19 +462,20 @@ div.mapboxgl-popup-content {
 /* Country-specific pages */
 
 #dash {
-  display: flex;
-  flex-direction: column;
   height: 100%;
   margin: 0;
   width: 100%;
 }
 
 #dash #charts {
-  flex-grow: 1;
+  display: flex;
+  height: 100%;
+  margin: 1ex;
+  width: 100%;
 }
 
-#charts {
-  margin: 1ex;
+#dash .chart {
+  flex-grow: 1;
 }
 
 #dash h1 {
