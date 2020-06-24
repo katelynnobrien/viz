@@ -505,7 +505,7 @@ function showRankPage() {
 }
 
 function onRankTouchMove(delta, maxWidth, maxValue) {
-  const points_per_step = 100;
+  const points_per_step = 150;
   rankAdvance(delta > 0, Math.floor(Math.abs(delta / points_per_step)),
               maxWidth, maxValue);
 }
