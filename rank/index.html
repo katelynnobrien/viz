@@ -5,14 +5,52 @@
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="../css/styles.css?c" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      overflow: hidden;
+    }
     h1 {
       border: none;
+      text-align: center;
     }
+    #data {
+      height: 100%;
+      margin: 25px auto;
+      position: relative;
+      width: 90%;
+    }
+    .bar {
+      border: 1px solid black;
+      border-radius: 10px;
+      height: 30px;
+      line-height: 20px;
+      overflow: hidden;
+      padding: 3px 10px;
+      position: absolute;
+      transition: top 0.2s, width 0.2s;
+      white-space: nowrap;
+      word-wrap: unset;
+    }
+
+    .bar .start {
+      display: inline-block;
+      left: 5px;
+      position: absolute;
+    }
+
+    .bar .end {
+      position: absolute;
+      right: 5px;
+    }
+
   </style>
 </head>
 <body>
 
-<h1>Rank</h1>
+<h1 id="title">Rank</h1>
+<div style="color: #777; text-align: center">Scroll to advance. Logarithmic scale.</div>
 
 <div id="data">Loading...</div>
 

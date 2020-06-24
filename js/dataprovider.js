@@ -228,12 +228,12 @@ DataProvider.prototype.fetchLatestCounts = function() {
 
 
 /** Loads the appropriate country-specific data. */
-DataProvider.prototype.loadCountryData = function(callback) {
+DataProvider.prototype.loadCountryData = function() {
   const code = document.getElementById('dash').getAttribute('c');
   let self = this;
-  this.fetchLocationData().then(function() {
+  return this.fetchLocationData().then(function() {
     return fetch(self.baseUrl_ + 'c/' + code + '.json'); }).
-        then(function(response) { return response.json(); }).then(callback);
+        then(function(response) { return response.json(); });
 }
 
 
@@ -320,7 +320,6 @@ DataProvider.prototype.fetchJhuData = function() {
   return fetch(this.baseUrl_ + 'aggregate.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      console.log('Finished fetching aggregate data.');
       self.aggregateData_ = jsonData;
     });
 }

@@ -11,6 +11,16 @@ const COLOR_MAP = [
   ['#edf91c', '> 2000'],
   ['cornflowerblue', 'New'],
 ];
+const RANK_COLORS = [
+  '#b600ff',  // purple
+  '#0c1fb4',  // dark blue
+  '#0060ff',  // blue
+  '#00dd8e',  // teal
+  '#00b31a',  // green
+  '#bb9900',  // yellow
+  '#e37300',  // orange
+  '#e90000',  // red
+];
 
 // Globals
 let dataProvider;
@@ -28,7 +38,9 @@ let threeDMode = false;
 let initialFlyTo;
 
 let currentIsoDate;
+let currentDateIndex = 0;
 let animationIntervalId = 0;
+let currentTouchY = -1;
 
 let atomicFeaturesByDay = {};
 
@@ -167,7 +179,8 @@ function showPopupForEvent(e) {
   totalCaseCount = props['total'];
 
   let content = document.createElement('div');
-  content.innerHTML = '<h3 class="popup-header"><span>' + locationSpan.join(', ') + '</span></h3>';
+  content.innerHTML = '<h3 class="popup-header"><span>' +
+        locationSpan.join(', ') + '</span></h3>';
 
   let relevantFeaturesByDay = {};
   for (let i = 0; i < dates.length; i++) {
@@ -181,9 +194,12 @@ function showPopupForEvent(e) {
     }
   }
 
-  content.appendChild(Graphing.makeCasesGraph(
-      DataProvider.convertGeoJsonFeaturesToGraphData(relevantFeaturesByDay, 'total'),
-      POPUP_CASE_GRAPH_WIDTH_PX, POPUP_CASE_GRAPH_HEIGHT_PX));
+  let container = document.createElement('div');
+  container.classList.add('chart');
+  Graphing.makeCasesGraph(
+      DataProvider.convertGeoJsonFeaturesToGraphData(
+          relevantFeaturesByDay, 'total'), false /* average */, container);
+  content.appendChild(container);
 
   // Ensure that if the map is zoomed out such that multiple
   // copies of the feature are visible, the popup appears
@@ -233,7 +249,8 @@ function onAllDataFetched() {
 function toggleSideBar() {
   let pageWrapper = document.getElementById('page-wrapper');
   const previouslyHidden = pageWrapper.classList.contains('sidebar-hidden');
-  document.getElementById('sidebar-tab-icon').textContent = previouslyHidden ? '◀' : '▶';
+  document.getElementById('sidebar-tab-icon').textContent =
+        previouslyHidden ? '◀' : '▶';
   pageWrapper.classList.toggle('sidebar-hidden');
 }
 
@@ -419,11 +436,131 @@ function updateData() {
 function countryInit() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
-  dataProvider.loadCountryData(showCountryPage);
+  dataProvider.fetchCountryNames().
+        then(dataProvider.fetchJhuData.bind(dataProvider)).
+        then(dataProvider.loadCountryData.bind(dataProvider)).
+        then(showCountryPage);
 }
 
 function rankInit() {
-  console.log('rank');
+  dataProvider = new DataProvider(
+      'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
+  dataProvider.fetchCountryNames().
+      then(dataProvider.fetchJhuData.bind(dataProvider)).
+      then(showRankPage);
+}
+
+function showRankPage() {
+  let container = document.getElementById('data');
+  container.innerHTML = '';
+  const aggregates = dataProvider.getAggregateData();
+  const latestDate = dataProvider.getLatestDateWithAggregateData();
+  const maxWidth = Math.floor(container.clientWidth);
+  let maxCases = 0;
+  dates = Object.keys(aggregates).sort();
+
+  for (let date in aggregates) {
+    for (let country in aggregates[date]) {
+      maxCases = Math.max(maxCases, aggregates[date][country]['cum_conf']);
+    }
+  }
+  const maxValue = Math.log10(maxCases);
+
+  let i = 0;
+  for (let code in countries) {
+    const c = countries[code];
+    let el = document.createElement('div');
+    el.setAttribute('id', code);
+    el.classList.add('bar');
+    el.style.backgroundColor = RANK_COLORS[i % RANK_COLORS.length];
+    el.style.color = '#fff';
+    let startSpan = document.createElement('span');
+    startSpan.classList.add('start');
+    let endSpan = document.createElement('span');
+    endSpan.classList.add('end');
+    startSpan.textContent = c.getName();
+    startSpan.style.backgroundColor = RANK_COLORS[i % RANK_COLORS.length];
+    el.appendChild(endSpan);
+    el.appendChild(startSpan);
+    container.appendChild(el);
+    i++;
+  }
+
+  showRankPageAtCurrentDate(maxWidth, maxValue);
+  container.onwheel = function(e) {
+    onRankWheel(e, maxWidth, maxValue)
+  };
+  container.ontouchmove = function(e) {
+    e.preventDefault();
+    onRankTouchMove(e['touches'][0].clientY - currentTouchY, maxWidth, maxValue)
+  };
+  container.ontouchstart = function(e) {
+    e.preventDefault();
+    currentTouchY = e['touches'][0].clientY;
+  }
+  container.ontouchend = function(e) {
+    e.preventDefault();
+    currentTouchY = -1;
+  }
+}
+
+function onRankTouchMove(delta, maxWidth, maxValue) {
+  const points_per_step = 150;
+  rankAdvance(delta > 0, Math.floor(Math.abs(delta / points_per_step)),
+              maxWidth, maxValue);
+}
+
+function onRankWheel(e, maxWidth, maxValue) {
+  e.preventDefault();
+  rankAdvance(e.deltaY > 0, 1, maxWidth, maxValue);
+}
+
+function rankAdvance(forward, steps, maxWidth, maxValue) {
+  let newDateIndex = currentDateIndex + (forward ? steps : -steps);
+  newDateIndex = Math.max(newDateIndex, 0);
+  newDateIndex = Math.min(newDateIndex, dates.length -1);
+  currentDateIndex = newDateIndex;
+  showRankPageAtCurrentDate(maxWidth, maxValue);
+}
+
+function showRankPageAtCurrentDate(maxWidth, maxValue) {
+  const date = dates[currentDateIndex];
+  document.getElementById('title').textContent = date;
+  const data = dataProvider.getAggregateData()[date];
+  const y_step = 33;
+  let container = document.getElementById('data');
+  let o = {};
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+    o[item['code']] = item['cum_conf'];
+  }
+  let bars = [...document.getElementsByClassName('bar')];
+  bars = bars.sort(function(a, b) {
+    const a_code = a.getAttribute('id');
+    const b_code = b.getAttribute('id');
+    const a_count = o[a_code] || 0;
+    const b_count = o[b_code] || 0;
+    return a_count < b_count ? 1 : -1;
+  });
+  let y = 0;
+  for (let i = 0; i < bars.length; i++) {
+    let b = bars[i];
+    const code = b.getAttribute('id');
+    if (!o[code]) {
+      b.style.display = 'none';
+      continue;
+    }
+    const case_count = o[code];
+    b.getElementsByClassName('end')[0].textContent = case_count.toLocaleString();
+    b.style.display = 'block';
+    b.style.top = y + 'px';
+    b.style.width = Math.floor(
+        maxWidth * Math.log10(case_count) / maxValue);
+    y += 37;
+  }
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i];
+  }
 }
 
 function completenessInit() {
@@ -495,6 +632,9 @@ function completenessInit() {
 }
 
 function showCountryPage(data) {
+  const dash = document.getElementById('dash');
+  const code = dash.getAttribute('c');
+  const country = countries[code];
   // De-duplicate geoids and dates, in case the data isn't well organized.
   let geoids = new Set();
   let dates = new Set();
@@ -528,9 +668,38 @@ function showCountryPage(data) {
 
   let chartsEl = document.getElementById('charts');
 
-  const newCasesChart = Graphing.makeCasesGraph(
-      o, chartsEl.clientWidth, chartsEl.clientHeight);
-  chartsEl.appendChild(newCasesChart);
+  const columns = chartsEl.clientHeight < chartsEl.clientWidth;
+  chartsEl.style.flexDirection = columns ? 'row' : 'column';
+  let container = document.createElement('div');
+  container.classList.add('chart');
+  container.setAttribute('id', 'new');
+  container.innerHTML = '';
+  Graphing.makeCasesGraph(o, true /* useAverageWindow */, container);
+  chartsEl.appendChild(container);
+
+  o = {'dates': dates};
+  const centroidGeoid = country.getCentroid().join('|');
+  const aggregateData = dataProvider.getAggregateData();
+  o[centroidGeoid] = [];
+  for (let i = 0; i < dates.length; i++) {
+    if (!aggregateData[dates[i]]) {
+      continue;
+    }
+    for (let j = 0; j < aggregateData[dates[i]]; i++) {
+      const item = aggregateData[dates[i]][j];
+      if (item['code'] == code) {
+        o[centroidGeoid].push(item['cum_conf']);
+        break;
+      }
+    }
+  }
+  container = document.createElement('div');
+  container.classList.add('chart');
+  container.setAttribute('id', 'total');
+  container.innerHTML = '';
+  // const totalCasesAggregateChart = Graphing.makeCasesGraph(
+      // o, true /*average */, container);
+  chartsEl.appendChild(container);
 }
 
 // Exports
@@ -543,3 +712,4 @@ globalThis['filterList'] = filterList;
 globalThis['init'] = init;
 globalThis['countryInit'] = countryInit;
 globalThis['completenessInit'] = completenessInit;
+globalThis['rankInit'] = rankInit;
