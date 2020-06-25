@@ -102,11 +102,9 @@ input[type=text] {
 }
 
 h1 {
-  margin: 0 0 0 .6rem;
-  padding-left: .6rem;
+  margin: 0;
   font-weight: 200;
   color: #ececec;
-  border-left: 1px solid #ccc;
 }
 
 #page-wrapper {
@@ -200,10 +198,6 @@ h1 {
   &:focus, &:hover, &:active, &.is-active {
     background-color: #454545;
   }
-}
-
-.reported-cases-subtext {
-  margin-left: 1rem;
 }
 
 #total-cases {
