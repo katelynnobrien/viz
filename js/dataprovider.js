@@ -109,6 +109,9 @@ DataProvider.prototype.getLatestDataPerCountry = function() {
   if (!this.latestDataPerCountry_) {
     this.latestDataPerCountry_ = {};
     const latestAggregateData = this.getLatestAggregateData();
+    if (!latestAggregateData) {
+      return null;
+    }
     for (let i = 0; i < latestAggregateData.length; i++) {
       const item = latestAggregateData[i];
       this.latestDataPerCountry_[item['code']] = [item['cum_conf']];
