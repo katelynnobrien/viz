@@ -5,7 +5,7 @@ let DiseaseMap = function() {
   this.mapboxMap_;
 };
 
-DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrYmNndWlzajAxOGMzMG9jeXdna3Vkb3UifQ.9cb47tJBUSP3K6jhlMUExw';
+DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZnBqcnBmN3RjanAifQ.H377pe4LPPcymeZkUBiBtg';
 
 DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.4;
 
