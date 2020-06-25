@@ -18,6 +18,7 @@ def compile_js(quiet=False):
         "--js js/graphing.js "
         "--js js/timeanimation.js "
         "--js js/healthmap.js "
+        "--js js/rank.js "
         "--externs js/externs_chart.js "
         "--externs js/externs_mapbox.js "
         "--js_output_file js/bundle.js"
