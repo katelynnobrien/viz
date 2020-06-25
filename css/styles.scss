@@ -113,12 +113,11 @@ h1 {
 
 #topbar {
   background-color: $sidebar-bgcolor;
-  display: flex;
-  flex-direction: row;
   height: 2ex;
   left: $sidebar-width;
   position: absolute;
   right: 0;
+  top: 0;
   z-index: 4;
 }
 
@@ -126,8 +125,24 @@ h1 {
   left: 0;
 }
 
+#topbar ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
 #topbar li {
+  cursor: pointer;
+  display: inline-block;
   flex-grow: 1;
+  font-size: 70%;
+  list-item-style: none;
+  padding: 0 5px;
+  text-align: center;
+  vertical-align: middle;
 }
 
 #sidebar {

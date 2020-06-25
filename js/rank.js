@@ -4,6 +4,7 @@ function rankInit() {
   dataProvider.fetchCountryNames().
       then(dataProvider.fetchJhuData.bind(dataProvider)).
       then(showRankPage);
+  setupTopBar();
 }
 
 function showRankPage() {

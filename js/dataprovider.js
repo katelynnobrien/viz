@@ -242,9 +242,8 @@ DataProvider.prototype.loadCountryData = function() {
 }
 
 
-DataProvider.prototype.fetchLatestDailySlice = function(callback) {
-  return this.fetchDailySlice(this.dataSliceFileNames_[0], true /* isNewest */)
-      .then(callback);
+DataProvider.prototype.fetchLatestDailySlice = function() {
+  return this.fetchDailySlice(this.dataSliceFileNames_[0], true /* isNewest */);
 }
 
 /**

@@ -1,9 +1,9 @@
 function completenessInit() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
-  dataProvider.fetchInitialData(function() {
+  dataProvider.fetchInitialData().then(function() {
     // We only need the latest daily slice for the data completeness page.
-    dataProvider.fetchLatestDailySlice(function() {
+    dataProvider.fetchLatestDailySlice().then(function() {
       const latestCountryFeatures = dataProvider.getCountryFeaturesForDay(
           dates[0]);
 
@@ -64,6 +64,7 @@ function completenessInit() {
       container.appendChild(list);
     });
   });
+  setupTopBar();
 }
 
 globalThis['completenessInit'] = completenessInit;

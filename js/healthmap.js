@@ -274,13 +274,39 @@ function processHash(url) {
         initialFlyTo = hashBrown;
       }
     }
-  }}
+  }
+}
+
+function setupTopBar() {
+  const LINKS = [
+    ['Map', '/'],
+    ['3D Map', '/#3d'],
+    ['Auto-drive', '/#autodrive'],
+    ['Rank', '/rank'],
+    ['Completeness', '/completeness'],
+  ];
+  let topBar = document.getElementById('topbar');
+  topBar.innerHTML = '<ul></ul>';
+  for (let i = 0; i < LINKS.length; i++) {
+    let item = document.createElement('li');
+    item.textContent = LINKS[i][0];
+    item.onclick = function() {
+      window.location.replace(LINKS[i][1]);
+    }
+    topBar.firstElementChild.appendChild(item);
+  }
+}
 
 function init() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
 
   processHash(window.location.href);
+  window.onhashchange = function() {
+    // TODO: Handle this more gracefully without a full reload.
+    window.location.reload();
+  }
+  setupTopBar();
   timeControl = document.getElementById('slider');
   document.getElementById('sidebar-tab').onclick = toggleSideBar;
   document.getElementById('percapita').addEventListener('change', function(e) {
@@ -294,7 +320,7 @@ function init() {
   dataProvider.fetchInitialData().then(function() {
     // Once the initial data is here, fetch the daily slices. Start with the
     // newest.
-    dataProvider.fetchLatestDailySlice(function() {
+    dataProvider.fetchLatestDailySlice().then(function() {
       // The page is now interactive and showing the latest data. If we need to
       // focus on a given country, do that now.
       if (!!initialFlyTo) {
@@ -321,6 +347,7 @@ function renderCountryList() {
   const latestAggregateData = dataProvider.getLatestAggregateData();
   if (!latestAggregateData) {
     console.log('No data for rendering country list');
+    return;
   }
 
   // Sort according to decreasing confirmed cases.
