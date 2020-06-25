@@ -291,7 +291,7 @@ function init() {
   map = new DiseaseMap();
   map.init(function() {});
 
-  dataProvider.fetchInitialData(function() {
+  dataProvider.fetchInitialData().then(function() {
     // Once the initial data is here, fetch the daily slices. Start with the
     // newest.
     dataProvider.fetchLatestDailySlice(function() {
@@ -319,6 +319,9 @@ function init() {
 function renderCountryList() {
   let countryList = document.getElementById('location-list');
   const latestAggregateData = dataProvider.getLatestAggregateData();
+  if (!latestAggregateData) {
+    console.log('No data for rendering country list');
+  }
 
   // Sort according to decreasing confirmed cases.
   latestAggregateData.sort(function(a, b) {

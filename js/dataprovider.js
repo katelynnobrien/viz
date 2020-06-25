@@ -124,6 +124,9 @@ DataProvider.prototype.getCountryFeaturesForDay = function(date) {
 
 
 DataProvider.prototype.getLatestAggregateData = function() {
+  if (!this.aggregateData_) {
+    return null;
+  }
   return this.aggregateData_[this.getLatestDateWithAggregateData()];
 }
 
@@ -131,14 +134,16 @@ DataProvider.prototype.getAggregateData = function() {
   return this.aggregateData_;
 }
 
-DataProvider.prototype.fetchInitialData = function(callback) {
+DataProvider.prototype.fetchInitialData = function() {
   const self = this;
-  Promise.all([
+  return Promise.all([
     this.fetchLatestCounts(),
     this.fetchCountryNames(),
     this.fetchDataIndex(),
     this.fetchLocationData()
-  ]).then(function() { self.fetchJhuData(); }).then(callback);
+  ]).then(function() {
+      self.fetchJhuData();
+  });
 };
 
 
