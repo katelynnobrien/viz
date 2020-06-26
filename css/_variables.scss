@@ -29,6 +29,7 @@ $breakpoint-lg-min: $breakpoint-md-max + 1px;
 $page-padding-end: 1rem;
 $sidebar-width: 18rem;
 $sidebar-margin-end: 1rem;
+$topbar-height: 2.5ex;
 
 @media screen and (max-width: $breakpoint-md-max) {
   $page-padding-end: 0.5rem;

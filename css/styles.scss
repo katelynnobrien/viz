@@ -113,7 +113,7 @@ h1 {
 
 #topbar {
   background-color: $sidebar-bgcolor;
-  height: 2ex;
+  height: $topbar-height;
   left: 0;
   position: absolute;
   right: 0;
@@ -138,11 +138,15 @@ h1 {
   cursor: pointer;
   display: inline-block;
   flex-grow: 1;
-  font-size: 70%;
+  font-size: 85%;
   list-item-style: none;
   padding: 0 5px;
   text-align: center;
   vertical-align: middle;
+}
+
+#topbar li.active {
+  color: cornflowerblue;
 }
 
 #sidebar {

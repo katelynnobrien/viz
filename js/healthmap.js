@@ -278,17 +278,23 @@ function processHash(url) {
 }
 
 function setupTopBar() {
+  const baseUrl = window.location.origin + '/';
   const LINKS = [
-    ['Map', '/'],
-    ['3D Map', '/#3d'],
-    ['Auto-drive', '/#autodrive'],
-    ['Rank', '/rank'],
-    ['Completeness', '/completeness'],
+    ['Map', baseUrl],
+    ['3D Map', baseUrl + '#3d'],
+    ['Auto-drive', baseUrl + '#autodrive'],
+    ['Rank', baseUrl + 'rank'],
+    ['Completeness', baseUrl + 'completeness'],
   ];
   let topBar = document.getElementById('topbar');
   topBar.innerHTML = '<ul></ul>';
   for (let i = 0; i < LINKS.length; i++) {
     let item = document.createElement('li');
+    const url = window.location.href;
+    const target = LINKS[i][1];
+    if (url.startsWith(target) && url.length - target.length < 2) {
+      item.classList.add('active');
+    }
     item.textContent = LINKS[i][0];
     item.onclick = function() {
       window.location.replace(LINKS[i][1]);
