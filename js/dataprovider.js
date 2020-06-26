@@ -109,6 +109,9 @@ DataProvider.prototype.getLatestDataPerCountry = function() {
   if (!this.latestDataPerCountry_) {
     this.latestDataPerCountry_ = {};
     const latestAggregateData = this.getLatestAggregateData();
+    if (!latestAggregateData) {
+      return null;
+    }
     for (let i = 0; i < latestAggregateData.length; i++) {
       const item = latestAggregateData[i];
       this.latestDataPerCountry_[item['code']] = [item['cum_conf']];
@@ -124,6 +127,9 @@ DataProvider.prototype.getCountryFeaturesForDay = function(date) {
 
 
 DataProvider.prototype.getLatestAggregateData = function() {
+  if (!this.aggregateData_) {
+    return null;
+  }
   return this.aggregateData_[this.getLatestDateWithAggregateData()];
 }
 
@@ -131,14 +137,16 @@ DataProvider.prototype.getAggregateData = function() {
   return this.aggregateData_;
 }
 
-DataProvider.prototype.fetchInitialData = function(callback) {
+DataProvider.prototype.fetchInitialData = function() {
   const self = this;
-  Promise.all([
+  return Promise.all([
     this.fetchLatestCounts(),
     this.fetchCountryNames(),
     this.fetchDataIndex(),
     this.fetchLocationData()
-  ]).then(function() { self.fetchJhuData(); }).then(callback);
+  ]).then(function() {
+      self.fetchJhuData();
+  });
 };
 
 
@@ -237,9 +245,8 @@ DataProvider.prototype.loadCountryData = function() {
 }
 
 
-DataProvider.prototype.fetchLatestDailySlice = function(callback) {
-  return this.fetchDailySlice(this.dataSliceFileNames_[0], true /* isNewest */)
-      .then(callback);
+DataProvider.prototype.fetchLatestDailySlice = function() {
+  return this.fetchDailySlice(this.dataSliceFileNames_[0], true /* isNewest */);
 }
 
 /**

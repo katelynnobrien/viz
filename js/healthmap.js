@@ -274,13 +274,45 @@ function processHash(url) {
         initialFlyTo = hashBrown;
       }
     }
-  }}
+  }
+}
+
+function setupTopBar() {
+  const baseUrl = window.location.origin + '/';
+  const LINKS = [
+    ['Map', baseUrl],
+    ['3D Map', baseUrl + '#3d'],
+    ['Auto-drive', baseUrl + '#autodrive'],
+    ['Rank', baseUrl + 'rank'],
+    ['Completeness', baseUrl + 'completeness'],
+  ];
+  let topBar = document.getElementById('topbar');
+  topBar.innerHTML = '<ul></ul>';
+  for (let i = 0; i < LINKS.length; i++) {
+    let item = document.createElement('li');
+    const url = window.location.href;
+    const target = LINKS[i][1];
+    if (url.startsWith(target) && url.length - target.length < 2) {
+      item.classList.add('active');
+    }
+    item.textContent = LINKS[i][0];
+    item.onclick = function() {
+      window.location.replace(LINKS[i][1]);
+    }
+    topBar.firstElementChild.appendChild(item);
+  }
+}
 
 function init() {
   dataProvider = new DataProvider(
       'https://raw.githubusercontent.com/ghdsi/covid-19/master/');
 
   processHash(window.location.href);
+  window.onhashchange = function() {
+    // TODO: Handle this more gracefully without a full reload.
+    window.location.reload();
+  }
+  setupTopBar();
   timeControl = document.getElementById('slider');
   document.getElementById('sidebar-tab').onclick = toggleSideBar;
   document.getElementById('percapita').addEventListener('change', function(e) {
@@ -291,10 +323,10 @@ function init() {
   map = new DiseaseMap();
   map.init(function() {});
 
-  dataProvider.fetchInitialData(function() {
+  dataProvider.fetchInitialData().then(function() {
     // Once the initial data is here, fetch the daily slices. Start with the
     // newest.
-    dataProvider.fetchLatestDailySlice(function() {
+    dataProvider.fetchLatestDailySlice().then(function() {
       // The page is now interactive and showing the latest data. If we need to
       // focus on a given country, do that now.
       if (!!initialFlyTo) {
@@ -319,6 +351,10 @@ function init() {
 function renderCountryList() {
   let countryList = document.getElementById('location-list');
   const latestAggregateData = dataProvider.getLatestAggregateData();
+  if (!latestAggregateData) {
+    console.log('No data for rendering country list');
+    return;
+  }
 
   // Sort according to decreasing confirmed cases.
   latestAggregateData.sort(function(a, b) {

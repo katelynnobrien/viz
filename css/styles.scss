@@ -111,9 +111,47 @@ h1 {
   width: 100vw;
 }
 
+#topbar {
+  background-color: $sidebar-bgcolor;
+  height: $topbar-height;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 4;
+}
+
+.sidebar-hidden #topbar {
+  left: 0;
+}
+
+#topbar ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#topbar li {
+  cursor: pointer;
+  display: inline-block;
+  flex-grow: 1;
+  font-size: 85%;
+  list-item-style: none;
+  padding: 0 5px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#topbar li.active {
+  color: cornflowerblue;
+}
+
 #sidebar {
   backdrop-filter: blur(.5rem);
-  background-color: $sidebar-bgcolor-mobile;
+  background-color: $sidebar-bgcolor;
   box-shadow: 0 -10px 12px -9px rgba(0,0,0,0.10);
   border-top-left-radius: .75rem;
   border-top-right-radius: .75rem;
@@ -141,7 +179,7 @@ h1 {
 
 #sidebar-tab {
   align-items: center;
-  background-color: $sidebar-bgcolor-mobile;
+  background-color: $sidebar-bgcolor;
   border-top-right-radius: 7px;
   border-bottom-right-radius: 7px;
   cursor: pointer;
@@ -150,6 +188,7 @@ h1 {
   height: 5ex;
   left: 100%;
   position: absolute;
+  top: 5ex;
   width: 2.5ex;
 }
 
@@ -323,12 +362,12 @@ h1 {
 }
 
 #legend {
+  border-radius: $box-corner;
   position: absolute;
-  top: 0;
+  top: 3ex;
   right: $page-padding-end;
   padding: .5rem .25rem;
   background-color: rgba(70,70,70,.8);
-  border-bottom-left-radius: $box-corner;
   z-index: 4;
   ul {
     display: flex;
