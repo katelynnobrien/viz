@@ -327,7 +327,13 @@ DataProvider.prototype.fetchJhuData = function() {
   return fetch(this.baseUrl_ + 'aggregate.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      self.aggregateData_ = jsonData;
+      self.aggregateData_ = {};
+      for (let date in jsonData) {
+        // Ignore empty data for a given date.
+        if (jsonData[date].length > 0) {
+          self.aggregateData_[date] = jsonData[date];
+        }
+      }
     });
 }
 
