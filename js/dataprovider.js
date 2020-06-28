@@ -197,12 +197,11 @@ DataProvider.prototype.fetchCountryNames = function() {
       let countryLines = responseText.trim().split('\n');
       for (let i = 0; i < countryLines.length; i++) {
         let parts = countryLines[i].split(':');
-        const code = parts[0];
-        const name = parts[1];
-        // Check whether population count is part of this datum.
-        const population = parts.length == 4 ? parseInt(parts[2], 10) : 0;
-        let bboxIndex = parts.length == 4 ? 3 : 2;
-        let bboxParts = parts[bboxIndex].split('|');
+        const continent = parts[0];
+        const code = parts[1];
+        const name = parts[2];
+        const population = parseInt(parts[3], 10) || 0;
+        let bboxParts = parts[4].split('|');
         let bboxes = [];
         for (let j = 0; j < bboxParts.length; j++) {
             let bbox = bboxParts[j].split(',');
