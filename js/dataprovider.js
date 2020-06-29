@@ -143,10 +143,9 @@ DataProvider.prototype.fetchInitialData = function() {
     this.fetchLatestCounts(),
     this.fetchCountryNames(),
     this.fetchDataIndex(),
-    this.fetchLocationData()
-  ]).then(function() {
-      self.fetchJhuData();
-  });
+    this.fetchLocationData(),
+    this.fetchJhuData()
+  ]);
 };
 
 
@@ -197,12 +196,11 @@ DataProvider.prototype.fetchCountryNames = function() {
       let countryLines = responseText.trim().split('\n');
       for (let i = 0; i < countryLines.length; i++) {
         let parts = countryLines[i].split(':');
-        const code = parts[0];
-        const name = parts[1];
-        // Check whether population count is part of this datum.
-        const population = parts.length == 4 ? parseInt(parts[2], 10) : 0;
-        let bboxIndex = parts.length == 4 ? 3 : 2;
-        let bboxParts = parts[bboxIndex].split('|');
+        const continent = parts[0];
+        const code = parts[1];
+        const name = parts[2];
+        const population = parseInt(parts[3], 10) || 0;
+        let bboxParts = parts[4].split('|');
         let bboxes = [];
         for (let j = 0; j < bboxParts.length; j++) {
             let bbox = bboxParts[j].split(',');
@@ -223,10 +221,15 @@ DataProvider.prototype.fetchLatestCounts = function() {
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
       const totalCasesEl = document.getElementById('total-cases');
+      const totalDeathsEl = document.getElementById('total-deaths');
       const lastUpdatedDateEl = document.getElementById('last-updated-date');
       if (!!totalCasesEl) {
         const totalCases = parseInt(jsonData[0]['caseCount'], 10);
         totalCasesEl.innerText = totalCases.toLocaleString();
+      }
+      if (!!totalDeathsEl) {
+        const totalDeaths = parseInt(jsonData[0]['deaths'], 10);
+        totalDeathsEl.innerText = totalDeaths.toLocaleString();
       }
       if (!!lastUpdatedDateEl) {
         lastUpdatedDateEl.innerText = jsonData[0]['date'];
@@ -327,7 +330,13 @@ DataProvider.prototype.fetchJhuData = function() {
   return fetch(this.baseUrl_ + 'aggregate.json?nocache=' + timestamp)
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
-      self.aggregateData_ = jsonData;
+      self.aggregateData_ = {};
+      for (let date in jsonData) {
+        // Ignore empty data for a given date.
+        if (jsonData[date].length > 0) {
+          self.aggregateData_[date] = jsonData[date];
+        }
+      }
     });
 }
 

@@ -20,11 +20,9 @@
         <h1 class="sidebar-title">COVID-19</h1>
       </div>
       <div class="reported-cases" onClick="handleFlyTo(10, 0, 1)">
-        <div id="total-cases"></div>
-        <div class="reported-cases-subtext">
-          <div class="reported-cases-label">Confirmed cases worldwide</div>
-          <div class="last-updated-date">Updated <span id="last-updated-date"></span></div>
-        </div>
+        <span id="total-cases"></span><span class="reported-cases-label">cases</span>
+        <span id="total-deaths"></span><span class="total-deaths-label">deaths</span>
+        <div class="last-updated-date">Updated <span id="last-updated-date"></span></div>
       </div>
       <div id="per-capita-container"><input type="checkbox" id="percapita"><label for="percapita">Per capita</label></div>
       <div class="location-filter-wrapper">
