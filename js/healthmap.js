@@ -323,10 +323,11 @@ function init() {
   map = new DiseaseMap();
   map.init(function() {});
 
-  dataProvider.fetchInitialData().then(function() {
-    // Once the initial data is here, fetch the daily slices. Start with the
-    // newest.
-    dataProvider.fetchLatestDailySlice().then(function() {
+  // Once the initial data is here, fetch the daily slices. Start with the
+  // newest.
+  dataProvider.fetchInitialData().
+      then(dataProvider.fetchLatestDailySlice()).
+      then(function() {
       // The page is now interactive and showing the latest data. If we need to
       // focus on a given country, do that now.
       if (!!initialFlyTo) {
@@ -338,7 +339,6 @@ function init() {
       map.showDataAtDate(dates[0]);
       dataProvider.fetchDailySlices(onAllDataFetched);
     });
-  });
   // Get the basic data about locations before we can start getting daily
   // slices.
 

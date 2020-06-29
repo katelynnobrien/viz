@@ -143,10 +143,9 @@ DataProvider.prototype.fetchInitialData = function() {
     this.fetchLatestCounts(),
     this.fetchCountryNames(),
     this.fetchDataIndex(),
-    this.fetchLocationData()
-  ]).then(function() {
-      self.fetchJhuData();
-  });
+    this.fetchLocationData(),
+    this.fetchJhuData()
+  ]);
 };
 
 
@@ -222,10 +221,15 @@ DataProvider.prototype.fetchLatestCounts = function() {
     .then(function(response) { return response.json(); })
     .then(function(jsonData) {
       const totalCasesEl = document.getElementById('total-cases');
+      const totalDeathsEl = document.getElementById('total-deaths');
       const lastUpdatedDateEl = document.getElementById('last-updated-date');
       if (!!totalCasesEl) {
         const totalCases = parseInt(jsonData[0]['caseCount'], 10);
         totalCasesEl.innerText = totalCases.toLocaleString();
+      }
+      if (!!totalDeathsEl) {
+        const totalDeaths = parseInt(jsonData[0]['deaths'], 10);
+        totalDeathsEl.innerText = totalDeaths.toLocaleString();
       }
       if (!!lastUpdatedDateEl) {
         lastUpdatedDateEl.innerText = jsonData[0]['date'];
