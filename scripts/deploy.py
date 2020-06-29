@@ -24,6 +24,7 @@ INCLUDE_LIST = [
     "css/styles.css",
     "img/*",
     "rank/index.html",
+    "sync/index.html",
 ]
 
 HTML_FILES = [
@@ -31,6 +32,7 @@ HTML_FILES = [
     "index.html",
     "completeness/index.html",
     "rank/index.html",
+    "sync/index.html",
 ]
 
 # Returns True if everything we need is here, False otherwise.
