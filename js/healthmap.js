@@ -266,7 +266,11 @@ function processHash(url) {
         document.body.classList.add('autodrive');
         continue;
       }
-      if (hashBrown.toLowerCase() == 'lighttheme') {
+      if (hashBrown.toLowerCase() == '3d') {
+        threeDMode = true;
+        continue;
+      }
+      if (hashBrown.toLowerCase() == 'light') {
         lightTheme = true;
         document.body.classList.add('lighttheme');
         continue;
