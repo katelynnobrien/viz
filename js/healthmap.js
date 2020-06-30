@@ -268,6 +268,7 @@ function processHash(url) {
       }
       if (hashBrown.toLowerCase() == 'lighttheme') {
         lightTheme = true;
+        document.body.classList.add('lighttheme');
         continue;
       }
 

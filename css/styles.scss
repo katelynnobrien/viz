@@ -491,6 +491,79 @@ div.mapboxgl-popup-content {
   margin-right: $page-padding-end;
 }
 
+/* Overrides for light theme mode: adjust colors */
+body.lighttheme {
+  background-color: $body-bgcolor-light;
+}
+.lighttheme #legend {
+  color: #333;
+  background-color: rgba(255,255,255,.8);
+  border: 1px solid #ececec;
+  .label, label span {
+    color: #333;
+  }
+}
+.lighttheme #range-slider {
+  background-color: rgba(225,225,225,.8);
+  label span {
+    color: #333;
+  }
+}
+.lighttheme #sidebar {
+  background-color: $sidebar-bgcolor-light;
+}
+
+.lighttheme #sidebar-tab {
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+  border-left: 0;
+}
+
+.lighttheme .location-filter-wrapper {
+  border-bottom-color: #ececec;
+}
+
+.lighttheme #location-list {
+  button {
+    color: #454545;
+    background-color: #fff;
+    border: 1px solid #f0f0f0;
+    box-shadow: none;
+    &:focus, &:hover, &:active, &.is-active {
+      background-color: #f3f3f3;
+    }
+  }
+  .num {
+    color: #999;
+  }
+}
+
+.lighttheme input[type=text] {
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ececec;
+  &::placeholder {
+    color: #999;
+  }
+}
+
+.lighttheme .reported-cases {
+  color: #333;
+  border: 1px solid transparent;
+  &:focus, &:hover, &:active, &.is-active {
+    border-color: #ececec;
+    background-color: #fff;
+  }
+}
+
+.lighttheme .last-updated-date {
+  color: #999;
+}
+
+.lighttheme h1 {
+  color: #333;
+}
+
 /* Country-specific pages */
 
 #dash {
