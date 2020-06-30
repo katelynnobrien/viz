@@ -21,6 +21,9 @@ Graphing.CHART_CONFIG = {
         // Don't clutter the tooltip with 0 values.
         return tooltipItem['value'] != 0;
       },
+      'itemSort': function(a, b) {
+        return b.value - a.value;
+      },
       'mode': 'index',
       'intersect': false,
       'position': 'nearest',

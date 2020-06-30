@@ -266,7 +266,8 @@ function processHash(url) {
         document.body.classList.add('autodrive');
         continue;
       }
-      if (hashBrown.toLowerCase() == 'lighttheme') {
+
+      if (hashBrown.toLowerCase() == 'light') {
         lightTheme = true;
         document.body.classList.add('lighttheme');
         continue;
@@ -288,6 +289,7 @@ function setupTopBar() {
     ['Auto-drive', baseUrl + '#autodrive'],
     ['Light Theme', baseUrl + '#lighttheme'],
     ['Rank', baseUrl + 'rank'],
+    ['Sync', baseUrl + 'sync'],
     ['Completeness', baseUrl + 'completeness'],
   ];
   let topBar = document.getElementById('topbar');
