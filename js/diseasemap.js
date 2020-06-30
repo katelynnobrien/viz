@@ -9,6 +9,9 @@ DiseaseMap.MAPBOX_TOKEN = 'pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrOGl1NGNldTAyYXYzZn
 
 DiseaseMap.THREE_D_FEATURE_SIZE_IN_LATLNG = 0.4;
 
+DiseaseMap.LIGHT_THEME = 'mapbox://styles/healthmap/ckc1y3lbr1upr1jq6pwfcb96k';
+DiseaseMap.DARK_THEME = 'mapbox://styles/healthmap/ck7o47dgs1tmb1ilh5b1ro1vn';
+
 /**
  * Takes an array of features, and bundles them in a way that the map API
  * can ingest.
@@ -83,7 +86,7 @@ DiseaseMap.prototype.init = function(callback) {
   mapboxgl.accessToken = DiseaseMap.MAPBOX_TOKEN;
   this.mapboxMap_ = new mapboxgl.Map({
     'container': 'map',
-    'style': 'mapbox://styles/healthmap/ck7o47dgs1tmb1ilh5b1ro1vn',
+    'style': lightTheme ? DiseaseMap.LIGHT_THEME : DiseaseMap.DARK_THEME,
     'center': [10, 0],
     'zoom': 1,
   }).addControl(new mapboxgl.NavigationControl());

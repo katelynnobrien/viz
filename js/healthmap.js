@@ -35,6 +35,7 @@ let map;
 let popup;
 let autoDriveMode = false;
 let threeDMode = false;
+let lightTheme = false;
 let initialFlyTo;
 
 let currentIsoDate;
@@ -265,10 +266,11 @@ function processHash(url) {
         document.body.classList.add('autodrive');
         continue;
       }
-      if (hashBrown.toLowerCase() == '3d') {
-        threeDMode = true;
+      if (hashBrown.toLowerCase() == 'lighttheme') {
+        lightTheme = true;
         continue;
       }
+
       // Country codes
       if (hashBrown.length == 2 && hashBrown.toUpperCase() == hashBrown) {
         initialFlyTo = hashBrown;
@@ -283,6 +285,7 @@ function setupTopBar() {
     ['Map', baseUrl],
     ['3D Map', baseUrl + '#3d'],
     ['Auto-drive', baseUrl + '#autodrive'],
+    ['Light Theme', baseUrl + '#lighttheme'],
     ['Rank', baseUrl + 'rank'],
     ['Sync', baseUrl + 'sync'],
     ['Completeness', baseUrl + 'completeness'],
