@@ -284,6 +284,7 @@ function setupTopBar() {
     ['3D Map', baseUrl + '#3d'],
     ['Auto-drive', baseUrl + '#autodrive'],
     ['Rank', baseUrl + 'rank'],
+    ['Sync', baseUrl + 'sync'],
     ['Completeness', baseUrl + 'completeness'],
   ];
   let topBar = document.getElementById('topbar');
